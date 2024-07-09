@@ -1,29 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:focustime/presentation/widgets/shared/custom_buttom_navigationbar.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  final Widget childView;
+
+  const HomeScreen({super.key, required this.childView});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Screen'),
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            const Text('Home Screen'),
-            ElevatedButton(onPressed: (){}, child:  const Text('Button')),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // Acción que se realizará al presionar el botón
-          print('Botón presionado');
-        },
-        child: const Icon(Icons.add),
-      ),
+      body: childView,
+      bottomNavigationBar: const CustomBottomNavigation(),
     );
   }
 }
