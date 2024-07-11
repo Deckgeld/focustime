@@ -87,7 +87,13 @@ class FastLockView extends StatelessWidget {
                       ),
                     ],
                   ),
-                  Icon(Icons.add_circle, size: 40, color: colors.primary),
+                  IconButton(
+                    icon: Icon(Icons.add_circle, size: 40, color: colors.primary),
+                    onPressed: () {
+                      
+                    },
+
+                  ),
                 ],
               ),
             ),
