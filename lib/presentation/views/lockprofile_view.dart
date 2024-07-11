@@ -21,13 +21,18 @@ class LockProfileView extends StatelessWidget {
           ),
         ],
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          _CardsCategory(title: 'Activas', type: StateLockProfile.active, profiles: lockProfiles),
-          _CardsCategory(title: 'Pausadas', type: StateLockProfile.paused, profiles: lockProfiles),
-          _CardsCategory(title: 'Inactivas', type: StateLockProfile.inactive, profiles: lockProfiles),
-        ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 80), // Añade un padding en la parte inferior
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              _CardsCategory(title: 'Activas', type: StateLockProfile.active, profiles: lockProfiles),
+              _CardsCategory(title: 'Pausadas', type: StateLockProfile.paused, profiles: lockProfiles),
+              _CardsCategory(title: 'Inactivas', type: StateLockProfile.inactive, profiles: lockProfiles),
+            ],
+          ),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -48,10 +53,8 @@ class _CardsCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Filtrar los perfiles que coincidan con el tipo especificado
     final filteredProfiles = profiles.where((profile) => profile.state == type).toList();
 
-    // Si no hay perfiles que coincidan, no se construye nada
     if (filteredProfiles.isEmpty) {
       return const SizedBox.shrink();
     }

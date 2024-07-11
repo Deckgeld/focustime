@@ -19,25 +19,27 @@ class LockProfileCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            
-            // Mostrar los iconos de las aplicaciones bloqueadas
-            BlockedAppsIcons(appImageUrls: profile.appImageUrls),
-            
+            Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+              // Mostrar los iconos de las aplicaciones bloqueadas
+              BlockedAppsIcons(appImageUrls: profile.appImageUrls),
+              
+              Padding(
+                padding: const EdgeInsets.fromLTRB(0, 0, 15, 0),
+                child: Icon(Icons.menu, color: colors.primary),
+              ),
+
+            ]),
+
             const SizedBox(height: 8),
             // Título del perfil y el icono de menú
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  profile.title,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Icon(Icons.more_vert, color: colors.primary),
-              ],
+            Text(
+              profile.title,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
+
             const SizedBox(height: 8),
             // Mostrar los tipos de bloqueo
             Column(
@@ -82,15 +84,14 @@ class LockProfileCard extends StatelessWidget {
       case NameLockType.limitUsage:
         return 'Límite ${lockType.limit} minutos/app';
       case NameLockType.schedule:
-        String startMinute = lockType.hoursActive!.first.minute.toString().padLeft(2, '0');
-        String endMinute = lockType.hoursActive!.last.minute.toString().padLeft(2, '0');
+        String startMinute =
+            lockType.hoursActive!.first.minute.toString().padLeft(2, '0');
+        String endMinute =
+            lockType.hoursActive!.last.minute.toString().padLeft(2, '0');
 
         return '${lockType.hoursActive!.first.hour}:$startMinute AM - ${lockType.hoursActive!.last.hour}:$endMinute PM';
       default:
         return 'Número de lanzamientos ${lockType.limit} veces/día';
-
     }
   }
 }
-
-
