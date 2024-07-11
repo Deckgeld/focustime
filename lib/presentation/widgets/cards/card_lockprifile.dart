@@ -59,7 +59,7 @@ class LockProfileCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  profile.state == StateLockProfile.inactive ? 'Pausado' : '',
+                  profile.state == StateLockProfile.inactive ? 'Inactivo' : '',
                   style: TextStyle(fontSize: 16, color: colors.primary),
                 ),
                 Switch(
@@ -82,7 +82,10 @@ class LockProfileCard extends StatelessWidget {
       case NameLockType.limitUsage:
         return 'Límite ${lockType.limit} minutos/app';
       case NameLockType.schedule:
-        return '${lockType.hoursActive?.first ?? 0}:00 AM - ${lockType.hoursActive?.last ?? 0}:00 PM';
+        String startMinute = lockType.hoursActive!.first.minute.toString().padLeft(2, '0');
+        String endMinute = lockType.hoursActive!.last.minute.toString().padLeft(2, '0');
+
+        return '${lockType.hoursActive!.first.hour}:$startMinute AM - ${lockType.hoursActive!.last.hour}:$endMinute PM';
       default:
         return 'Número de lanzamientos ${lockType.limit} veces/día';
 
