@@ -9,9 +9,6 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDarkMode = ref.watch(themeProvider).isDarkMode;
     // Asumiendo que colors es una lista de String
-    final colors = ref.watch(colorListProvider);
-    final currentColor = ref.watch(themeProvider).selectColor;
-
 
     return Scaffold(
       appBar: AppBar(
@@ -33,28 +30,10 @@ class SettingsScreen extends ConsumerWidget {
                           onChanged: (value) {
                             ref.read(themeProvider.notifier).changeTheme();
                           })),
-                  _CustomListTile(
+                  const _CustomListTile(
                     title: "Cambiar colores - tema",
                     icon: Icons.color_lens_outlined,
-                    trailing: DropdownButton<int>(
-                      value: currentColor, // Asegúrate de que esto sea un índice (int)
-                      items: List.generate(colors.length, (index) {
-                        return DropdownMenuItem<int>(
-                          value: index,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: colors[index],
-                              shape: BoxShape.circle,
-                            ),
-                            width: 20,
-                            height: 20,
-                          ),
-                        );
-                      }),
-                      onChanged: (int? newIndex) {
-                        ref.read(themeProvider.notifier).changeColor(newIndex!);
-                      },
-                    ),
+                    trailing: _DropdownColors(),
                   ),
                   const _CustomListTile(
                       title: "Notifications",
@@ -68,6 +47,36 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _DropdownColors extends ConsumerWidget {
+  const _DropdownColors();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final colors = ref.watch(colorListProvider);
+    final currentColor = ref.watch(themeProvider).selectColor;
+    
+    return DropdownButton<int>(
+      value: currentColor, // Asegúrate de que esto sea un índice (int)
+      items: List.generate(colors.length, (index) {
+        return DropdownMenuItem<int>(
+          value: index,
+          child: Container(
+            decoration: BoxDecoration(
+              color: colors[index],
+              shape: BoxShape.circle,
+            ),
+            width: 20,
+            height: 20,
+          ),
+        );
+      }),
+      onChanged: (int? newIndex) {
+        ref.read(themeProvider.notifier).changeColor(newIndex!);
+      },
     );
   }
 }
