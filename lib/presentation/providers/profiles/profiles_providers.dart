@@ -4,12 +4,12 @@ import 'package:focustime/domain/entitites/locktype.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 
-part 'profile_providers.g.dart';
+part 'profiles_providers.g.dart';
 
 const uuid = Uuid();
 
 @Riverpod(keepAlive: true)
-class lockProfiles extends _$lockProfiles {
+class LockProfiles extends _$LockProfiles {
   @override
   List<LockProfile> build() => [
     LockProfile(
@@ -53,7 +53,7 @@ class lockProfiles extends _$lockProfiles {
     LockProfile(
       id: uuid.v4(),
       title: 'Bloqueo de juegos', 
-      stateProfile: StateLockProfile.inactive, 
+      stateProfile: StateLockProfile.paused, 
 
       lockTypes: [
         LockType(
@@ -131,19 +131,18 @@ class lockProfiles extends _$lockProfiles {
   
   ];
   
-  void creadTodo( LockProfile newProfile ) {
+  void creadProfile( LockProfile newProfile ) {
     state = [
       ...state,
       newProfile
     ];
   }
 
-  void toggleState( StateLockProfile newState, String id ) {
+  void chageState( StateLockProfile newState, String id ) {
     state = state.map((profile) {
       if (profile.id == id) {
         return profile.copyWith(
           stateProfile: newState
-          // completedAt: todo.completedAt == null ? DateTime.now() : null,
         );
       }
       return profile;

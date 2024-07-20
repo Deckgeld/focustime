@@ -27,7 +27,7 @@ class LockProfileView extends ConsumerWidget {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(bottom: 80), // Añade un padding en la parte inferior
+          padding: const EdgeInsets.only(bottom: 80),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: [

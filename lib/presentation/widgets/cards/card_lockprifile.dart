@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/lockprofile.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
+import 'package:focustime/presentation/providers/profiles/profiles_providers.dart';
 import 'package:focustime/presentation/widgets/cards/blocked_apps_icon.dart';
 
-class LockProfileCard extends StatelessWidget {
+class LockProfileCard extends ConsumerWidget {
   final LockProfile profile;
 
   const LockProfileCard({super.key, required this.profile});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    final lockProfileProvider = ref.watch(lockProfilesProvider);
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -46,14 +49,12 @@ class LockProfileCard extends StatelessWidget {
                       value: 'opcion3',
                       child: Text('Eliminar'),
                     ),
-                    // Agrega más opciones según sea necesario
                   ],
                 ),
         
               ]),
         
               const SizedBox(height: 8),
-              // Título del perfil y el icono de menú
               Text(
                 profile.title,
                 style: const TextStyle(
@@ -70,7 +71,6 @@ class LockProfileCard extends StatelessWidget {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4.0),
                     child: Text(
-                      // lockTypeDescription(lockType),
                       lockTypeDescription(lockType),
                       style: const TextStyle(fontSize: 10),
                     ),
@@ -87,9 +87,13 @@ class LockProfileCard extends StatelessWidget {
                     style: TextStyle(fontSize: 16, color: colors.primary),
                   ),
                   Switch(
-                    value: profile.stateProfile == StateLockProfile.active,
+                    value: profile.stateProfile == StateLockProfile.active || profile.stateProfile == StateLockProfile.paused,
                     onChanged: (value) {
-                      // Aquí puedes manejar el cambio de estado del switch
+                      // Cambiar el estado del perfil
+                      ref.read(lockProfilesProvider.notifier).chageState(
+                        value ? StateLockProfile.active : StateLockProfile.inactive,
+                        profile.id,
+                      );
                     },
                   ),
                 ],
