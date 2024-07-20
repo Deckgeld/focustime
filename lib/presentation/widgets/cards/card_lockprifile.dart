@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:focustime/domain/entitites/lockprofile.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
-import 'package:focustime/presentation/widgets/blocked_apps_icon.dart';
+import 'package:focustime/presentation/widgets/cards/blocked_apps_icon.dart';
 
 class LockProfileCard extends StatelessWidget {
   final LockProfile profile;
@@ -61,11 +61,11 @@ class LockProfileCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  profile.state == StateLockProfile.inactive ? 'Inactivo' : '',
+                  profile.stateProfile == StateLockProfile.inactive ? 'Inactivo' : '',
                   style: TextStyle(fontSize: 16, color: colors.primary),
                 ),
                 Switch(
-                  value: profile.state == StateLockProfile.active,
+                  value: profile.stateProfile == StateLockProfile.active,
                   onChanged: (value) {
                     // Aquí puedes manejar el cambio de estado del switch
                   },

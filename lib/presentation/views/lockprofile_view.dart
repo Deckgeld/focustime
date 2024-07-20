@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:focustime/domain/dommy_data.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/lockprofile.dart';
+import 'package:focustime/presentation/providers/providers.dart';
 import 'package:focustime/presentation/widgets/cards/card_lockprifile.dart';
 import 'package:go_router/go_router.dart';
 
-class LockProfileView extends StatelessWidget {
+class LockProfileView extends ConsumerWidget {
   const LockProfileView({super.key});
 
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final lockProfiles = ref.watch(lockProfilesProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Perfiles de bloqueo'),
@@ -53,7 +57,7 @@ class _CardsCategory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final filteredProfiles = profiles.where((profile) => profile.state == type).toList();
+    final filteredProfiles = profiles.where((profile) => profile.stateProfile == type).toList();
 
     if (filteredProfiles.isEmpty) {
       return const SizedBox.shrink();
