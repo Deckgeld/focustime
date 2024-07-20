@@ -40,7 +40,7 @@ class LockProfileView extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Acción que se realizará al presionar el botón
+          context.push('/newprofile');
         },
         child: const Icon(Icons.add),
       ),

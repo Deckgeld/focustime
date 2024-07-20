@@ -1,3 +1,4 @@
+import 'package:focustime/presentation/screen/newprofile_screen.dart';
 import 'package:focustime/presentation/screen/settings_screen.dart';
 import 'package:focustime/presentation/views/fastlock_view.dart';
 import 'package:focustime/presentation/screen/home_screen.dart';
@@ -28,6 +29,12 @@ final appRouter = GoRouter(
           path: '/settings',
           builder: (context, state) {
             return const SettingsScreen();
+          },
+        ),
+        GoRoute(
+          path: '/newprofile',
+          builder: (context, state) {
+            return NewProfileScreen();
           },
         ),
         
