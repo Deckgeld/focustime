@@ -6,7 +6,7 @@ import 'package:focustime/presentation/widgets/cards/blocked_apps_icon.dart';
 class LockProfileCard extends StatelessWidget {
   final LockProfile profile;
 
-  LockProfileCard({required this.profile});
+  const LockProfileCard({super.key, required this.profile});
 
   @override
   Widget build(BuildContext context) {

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class BlockedAppsIcons extends StatelessWidget {
   final List<String> appImageUrls;
 
-  BlockedAppsIcons({required this.appImageUrls});
+  const BlockedAppsIcons({super.key, required this.appImageUrls});
 
   @override
   Widget build(BuildContext context) {
