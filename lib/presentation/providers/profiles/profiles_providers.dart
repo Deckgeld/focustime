@@ -18,6 +18,7 @@ class LockProfiles extends _$LockProfiles {
       stateProfile: StateLockProfile.active, 
       lockTypes: [
         LockType(
+          id: uuid.v4(),
           type: NameLockType.limitUsage, 
           limit: 30, 
           daysActive: [
@@ -26,9 +27,11 @@ class LockProfiles extends _$LockProfiles {
             DayOfWeek.wednesday, 
             DayOfWeek.thursday, 
             DayOfWeek.friday
-          ]
+          ],
+          isByBlock: true
         ),
         LockType(
+          id: uuid.v4(),
           type: NameLockType.numberLaunch, 
           limit: 300, 
           daysActive: [
@@ -57,6 +60,7 @@ class LockProfiles extends _$LockProfiles {
 
       lockTypes: [
         LockType(
+          id: uuid.v4(),
           type: NameLockType.numberLaunch, 
           limit: 3000, 
           daysActive: [
@@ -68,6 +72,7 @@ class LockProfiles extends _$LockProfiles {
           ]
         ),
         LockType(
+          id: uuid.v4(),
           type: NameLockType.schedule, 
           hoursActive: [
             const TimeOfDay(hour: 8, minute: 00), 
@@ -96,6 +101,7 @@ class LockProfiles extends _$LockProfiles {
 
       lockTypes: [
         LockType(
+          id: uuid.v4(),
           type: NameLockType.numberLaunch, 
           limit: 3000, 
           daysActive: [
@@ -107,6 +113,7 @@ class LockProfiles extends _$LockProfiles {
           ]
         ),
         LockType(
+          id: uuid.v4(),
           type: NameLockType.schedule, 
           hoursActive: [
             const TimeOfDay(hour: 8, minute: 00), 
@@ -148,4 +155,64 @@ class LockProfiles extends _$LockProfiles {
       return profile;
     }).toList();
   }
+}
+
+@Riverpod()
+class NewLockProfile extends _$NewLockProfile {
+  @override
+  LockProfile build() {
+    return LockProfile( 
+      id: uuid.v4(),
+      stateProfile: StateLockProfile.active,
+      lockTypes: [],
+      appImageUrls: [],
+      isBlockNotifications: true
+    );
+  }
+
+  void changeTitle( String newTitle ) {
+    if (newTitle.isEmpty) return;
+    state = state.copyWith(
+      title: newTitle
+    );
+  }
+
+  void addLockType( LockType newLockType ) {
+    state = state.copyWith(
+      lockTypes: [
+        ...state.lockTypes,
+        newLockType
+      ]
+    );
+  }
+
+  void removeLockType( String id ) {
+    state = state.copyWith(
+      lockTypes: state.lockTypes.where((lockType) => lockType.id != id).toList()
+    );
+  }
+
+  void addAppImageUrl( String newUrl ) {
+    state = state.copyWith(
+      appImageUrls: [
+        ...state.appImageUrls,
+        newUrl
+      ]
+    );
+  }
+
+  void removeAppImageUrl( String url ) {
+    state = state.copyWith(
+      appImageUrls: state.appImageUrls.where((appImageUrl) => appImageUrl != url).toList()
+    );
+  }
+
+  void toggleBlockNotifications() {
+    state = state.copyWith(
+      isBlockNotifications: !state.isBlockNotifications
+    );
+  }
+
+  void updateLockType(LockType lockType) {}
+
 }

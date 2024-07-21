@@ -108,7 +108,7 @@ class LockProfileCard extends ConsumerWidget {
   String lockTypeDescription(LockType lockType) {
     switch (lockType.type) {
       case NameLockType.limitUsage:
-        return 'Límite ${lockType.limit} minutos/app';
+        return 'Límite ${lockType.limit} minutos / ${lockType.isByBlock! ? 'bloque' : 'app'}';
       case NameLockType.schedule:
         String startMinute =
             lockType.hoursActive!.first.minute.toString().padLeft(2, '0');

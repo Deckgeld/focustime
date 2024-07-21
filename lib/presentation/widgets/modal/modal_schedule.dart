@@ -1,13 +1,13 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:focustime/presentation/widgets/shared/day_select_button.dart';
 
 class ScheduleModal extends StatelessWidget {
-  final Function(TimeOfDay start, TimeOfDay end) onScheduleSet;
-
-  const ScheduleModal({super.key, required this.onScheduleSet});
+  const ScheduleModal({super.key});
 
   @override
   Widget build(BuildContext context) {
+
     TimeOfDay startTime = const TimeOfDay(hour: 10, minute: 0);
     TimeOfDay endTime = const TimeOfDay(hour: 16, minute: 0);
 
@@ -18,8 +18,9 @@ class ScheduleModal extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () {
-              onScheduleSet(startTime, endTime);
               Navigator.pop(context);
+              Navigator.pop(context);
+
             },
           ),
         ],
@@ -30,7 +31,7 @@ class ScheduleModal extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Días'),
-            const DaySelectButton(),
+            // const DaySelectButton(),
 
             const SizedBox(height: 16),
 

@@ -6,7 +6,7 @@ part of 'profiles_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$lockProfilesHash() => r'1926eb05db4edb55b76a772a4ed37d0f10faac6c';
+String _$lockProfilesHash() => r'74dd96db06c02e1df1ccc3fdaf62407036249b62';
 
 /// See also [LockProfiles].
 @ProviderFor(LockProfiles)
@@ -21,5 +21,21 @@ final lockProfilesProvider =
 );
 
 typedef _$LockProfiles = Notifier<List<LockProfile>>;
+String _$newLockProfileHash() => r'6fca831dc48b557f405af48fca73491446391eec';
+
+/// See also [NewLockProfile].
+@ProviderFor(NewLockProfile)
+final newLockProfileProvider =
+    AutoDisposeNotifierProvider<NewLockProfile, LockProfile>.internal(
+  NewLockProfile.new,
+  name: r'newLockProfileProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$newLockProfileHash,
+  dependencies: null,
+  allTransitiveDependencies: null,
+);
+
+typedef _$NewLockProfile = AutoDisposeNotifier<LockProfile>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

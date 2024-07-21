@@ -1,10 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:focustime/presentation/widgets/shared/day_select_button.dart';
 
-class LaunchNumberModal extends StatelessWidget {
-  final Function(int launches) onLaunchNumberSet;
-
-  const LaunchNumberModal({super.key, required this.onLaunchNumberSet});
+class LaunchesLimitModal extends StatelessWidget {
+  const LaunchesLimitModal({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +17,7 @@ class LaunchNumberModal extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () {
-              onLaunchNumberSet(launches);
+              Navigator.pop(context);
               Navigator.pop(context);
             },
           ),
@@ -29,13 +29,14 @@ class LaunchNumberModal extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Días'),
-            const DaySelectButton(),
+            // const DaySelectButton(),
 
             const SizedBox(height: 16),
 
             TextField(
               decoration: const InputDecoration(labelText: 'Lanzamientos'),
               keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               onChanged: (value) {
                 launches = int.tryParse(value) ?? 0;
               },

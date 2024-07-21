@@ -1,34 +1,54 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:focustime/domain/entitites/locktype.dart';
+import 'package:focustime/presentation/providers/profiles/profiles_providers.dart';
 import 'package:focustime/presentation/widgets/shared/day_select_button.dart';
+import 'package:uuid/uuid.dart';
 
-class UsageLimitModal extends StatefulWidget {
-  final Function(int hours, int minutes, Set<int> selectedOptions) onUsageLimitSet;
-
-  const UsageLimitModal({super.key, required this.onUsageLimitSet});
+class UsageLimitModal extends ConsumerStatefulWidget {
+  const UsageLimitModal({super.key});
 
   @override
-  _UsageLimitModalState createState() => _UsageLimitModalState();
+  ConsumerState<UsageLimitModal> createState() => _UsageLimitModalState();
 }
 
-class _UsageLimitModalState extends State<UsageLimitModal> {
-  int _hours = 0;
-  int _minutes = 0;
-  Set<int> _selectedOptions = {1}; // Estado inicial del segmented button
+class _UsageLimitModalState extends ConsumerState<UsageLimitModal> {
+  Duration selectedTime = const Duration(hours: 0, minutes: 0);
+  bool isBlockSelected = true;
+  Set<DayOfWeek> selectedDays = {};
+
+  void handleDaySelection(Set<DayOfWeek> selection) {
+    setState(() {
+      selectedDays = selection;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Límite de uso'),
+        title: const Text("Limite de uso"),
         actions: [
           IconButton(
             icon: const Icon(Icons.check),
             onPressed: () {
-              widget.onUsageLimitSet(_hours, _minutes, _selectedOptions);
+              final newLockType = LockType(
+                id: const Uuid().v4(),
+                type: NameLockType.limitUsage,
+                daysActive: selectedDays.toList(),
+                limit: selectedTime.inMinutes,
+                isByBlock: isBlockSelected,
+              );
+
+              ref
+                  .read(newLockProfileProvider.notifier)
+                  .addLockType(newLockType);
+
+              Navigator.pop(context);
               Navigator.pop(context);
             },
-          ),
+          )
         ],
       ),
       body: Padding(
@@ -37,41 +57,44 @@ class _UsageLimitModalState extends State<UsageLimitModal> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text('Días'),
-            const DaySelectButton(),
-
+            DaySelectButton(onSelectionChanged: handleDaySelection),
             const SizedBox(height: 16),
-
             const Text('Límite'),
             SizedBox(
-              height: 200, // Ajusta la altura según necesites
+              height: 200,
               child: CupertinoTimerPicker(
-                mode: CupertinoTimerPickerMode.hm, // Modo: horas, minutos
+                mode: CupertinoTimerPickerMode.hm,
                 onTimerDurationChanged: (Duration changedTimer) {
                   setState(() {
-                    _hours = changedTimer.inHours;
-                    _minutes = changedTimer.inMinutes % 60;
+                    selectedTime = changedTimer;
                   });
                 },
               ),
             ),
-
-
             Container(
               padding: const EdgeInsets.fromLTRB(16, 8, 0, 8),
               child: const Text('Bloquear Por:'),
             ),
             Center(
-              child: SegmentedButton<int>(
-                segments: const [
-                  ButtonSegment(value: 1, icon: Text('Bloque')),
-                  ButtonSegment(value: 2, icon: Text('Aplicacion')),
-                ],
-                selected: _selectedOptions,
-                onSelectionChanged: (Set<int> value) {
+              child: ToggleButtons(
+                borderRadius: BorderRadius.circular(8),
+                isSelected: [isBlockSelected, !isBlockSelected],
+                onPressed: (int index) {
                   setState(() {
-                    _selectedOptions = value;
+                    isBlockSelected = (index == 0);
                   });
+                  print(isBlockSelected);
                 },
+                children: const [
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text("Block"),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: Text("App"),
+                  ),
+                ],
               ),
             ),
           ],

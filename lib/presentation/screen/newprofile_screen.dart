@@ -1,33 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:focustime/domain/entitites/locktype.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:focustime/presentation/providers/profiles/profiles_providers.dart';
 import 'package:focustime/presentation/widgets/cards/card_locktype.dart';
 import 'package:focustime/presentation/widgets/modal/modal_newlocktype.dart';
 
-class NewProfileScreen extends StatefulWidget {
-  const NewProfileScreen({super.key});
+class NewProfileScreen extends ConsumerWidget {
+  NewProfileScreen({super.key});
 
-  @override
-  _NewProfileScreenState createState() => _NewProfileScreenState();
-}
-
-class _NewProfileScreenState extends State<NewProfileScreen> {
   final TextEditingController _nombrePerfilController = TextEditingController();
-  final List<LockType> _tiposBloqueo = [];
-
-  void _agregarTipoBloqueo(LockType tipoBloqueo) {
-    setState(() {
-      _tiposBloqueo.add(tipoBloqueo);
-    });
-  }
-
-  void _eliminarTipoBloqueo(int index) {
-    setState(() {
-      _tiposBloqueo.removeAt(index);
-    });
-  }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
+  final newLockProfile = ref.watch(newLockProfileProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Nuevo perfil'),
@@ -38,6 +23,7 @@ class _NewProfileScreenState extends State<NewProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
               TextField(
                 controller: _nombrePerfilController,
                 decoration: const InputDecoration(
@@ -45,6 +31,7 @@ class _NewProfileScreenState extends State<NewProfileScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
+              
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -58,9 +45,7 @@ class _NewProfileScreenState extends State<NewProfileScreen> {
                         context: context,
                         isScrollControlled: true,
                         backgroundColor: Colors.transparent,
-                        builder: (context) => NewLockTypeModal(
-                          onLockTypeAdded: _agregarTipoBloqueo,
-                        ),
+                        builder: (context) => const NewLockTypeModal(),
                       );
                     },
                     child: const Text('Añadir'),
@@ -70,10 +55,10 @@ class _NewProfileScreenState extends State<NewProfileScreen> {
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
-                itemCount: _tiposBloqueo.length,
+                itemCount: newLockProfile.lockTypes.length,
                 itemBuilder: (context, index) {
                   return LockTypeCard(
-                    lockType: _tiposBloqueo[index],
+                    lockType: newLockProfile.lockTypes[index],
                   );
                 },
               ),
@@ -106,16 +91,21 @@ class _NewProfileScreenState extends State<NewProfileScreen> {
                   const SizedBox(width: 8),
                   const Text('Bloquear notificaciones'),
                   const Spacer(),
-                  Checkbox(value: false, onChanged: (value) {}),
+                  Checkbox(
+                    value: newLockProfile.isBlockNotifications, 
+                    onChanged: (value) => ref.read(newLockProfileProvider.notifier).toggleBlockNotifications()
+                  ),
                 ],
               ),
               const SizedBox(height: 16),
               Center(
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Acción del botón
-                  },
                   child: const Text('Guardar'),
+                  onPressed: () {
+                    ref.read(newLockProfileProvider.notifier).changeTitle(_nombrePerfilController.text);
+                    ref.read(lockProfilesProvider.notifier).creadProfile(ref.read(newLockProfileProvider));
+                    Navigator.pop(context);
+                  },
                 ),
               ),
             ],
