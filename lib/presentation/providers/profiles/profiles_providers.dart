@@ -16,6 +16,7 @@ class LockProfiles extends _$LockProfiles {
       id: uuid.v4(),
       title: 'Bloqueo de redes sociales', 
       stateProfile: StateLockProfile.active, 
+      isBlockNotifications: true,
       lockTypes: [
         LockType(
           id: uuid.v4(),

@@ -101,7 +101,7 @@ class LockTypeCard extends StatelessWidget {
                 ),
               if (lockType.type == NameLockType.limitUsage && lockType.limit != null)
                 Text(
-                  '${lockType.limit} minutos diarios / bloque',
+                  '${lockType.limit} minutos diarios  / ${lockType.isByBlock! ? 'bloque' : 'app'}',
                   style: const TextStyle(fontSize: 14),
                 ),
               if (lockType.type == NameLockType.numberLaunch && lockType.limit != null)

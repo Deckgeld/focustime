@@ -18,87 +18,104 @@ class _UsageLimitModalState extends ConsumerState<UsageLimitModal> {
   bool isBlockSelected = true;
   Set<DayOfWeek> selectedDays = {};
 
-  void handleDaySelection(Set<DayOfWeek> selection) {
+  void handleDaySelection(Set<DayOfWeek> selections) {
     setState(() {
-      selectedDays = selection;
+      selectedDays = selections;
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("Limite de uso"),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: () {
-              final newLockType = LockType(
-                id: const Uuid().v4(),
-                type: NameLockType.limitUsage,
-                daysActive: selectedDays.toList(),
-                limit: selectedTime.inMinutes,
-                isByBlock: isBlockSelected,
-              );
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      },
+      child: DraggableScrollableSheet(
+        initialChildSize: 0.8,
+        minChildSize: 0.3,
+        maxChildSize: 0.8,
+        builder: (_, scrollController) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text("Limite de uso"),
+              actions: [
+                IconButton(
+                  icon: const Icon(Icons.check),
+                  onPressed: () {
+                    final newLockType = LockType(
+                      id: const Uuid().v4(),
+                      type: NameLockType.limitUsage,
+                      daysActive: selectedDays.toList(),
+                      limit: selectedTime.inMinutes,
+                      isByBlock: isBlockSelected,
+                    );
 
-              ref
-                  .read(newLockProfileProvider.notifier)
-                  .addLockType(newLockType);
+                    ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
 
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-          )
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text('Días'),
-            DaySelectButton(onSelectionChanged: handleDaySelection),
-            const SizedBox(height: 16),
-            const Text('Límite'),
-            SizedBox(
-              height: 200,
-              child: CupertinoTimerPicker(
-                mode: CupertinoTimerPickerMode.hm,
-                onTimerDurationChanged: (Duration changedTimer) {
-                  setState(() {
-                    selectedTime = changedTimer;
-                  });
-                },
-              ),
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                )
+              ],
             ),
-            Container(
-              padding: const EdgeInsets.fromLTRB(16, 8, 0, 8),
-              child: const Text('Bloquear Por:'),
-            ),
-            Center(
-              child: ToggleButtons(
-                borderRadius: BorderRadius.circular(8),
-                isSelected: [isBlockSelected, !isBlockSelected],
-                onPressed: (int index) {
-                  setState(() {
-                    isBlockSelected = (index == 0);
-                  });
-                  print(isBlockSelected);
-                },
-                children: const [
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text("Block"),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ListView(
+                controller: scrollController,
+                children: [
+
+                  const Text('Días'),
+                  DaySelectButton(onSelectionChanged: handleDaySelection),
+
+                  const SizedBox(height: 16),
+
+
+                  const Text('Límite'),
+                  SizedBox(
+                    height: 200,
+                    child: CupertinoTimerPicker(
+                      mode: CupertinoTimerPickerMode.hm,
+                      onTimerDurationChanged: (Duration changedTimer) {
+                        setState(() {
+                          selectedTime = changedTimer;
+                        });
+                      },
+                    ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16),
-                    child: Text("App"),
+
+
+                  Container(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 0, 8),
+                    child: const Text('Bloquear Por:'),
+                  ),
+                  Center(
+                    child: ToggleButtons(
+                      borderRadius: BorderRadius.circular(8),
+                      isSelected: [isBlockSelected, !isBlockSelected],
+                      onPressed: (int index) {
+                        setState(() {
+                          isBlockSelected = (index == 0);
+                        });
+                      },
+                      children: const [
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text("Block"),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          child: Text("App"),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

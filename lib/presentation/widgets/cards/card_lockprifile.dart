@@ -28,14 +28,15 @@ class LockProfileCard extends ConsumerWidget {
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
                 // Mostrar los iconos de las aplicaciones bloqueadas
                 BlockedAppsIcons(appImageUrls: profile.appImageUrls),
-                
+
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.menu), // Icono del botón
                   onSelected: (String result) {
                     // Acción al seleccionar una opción
                     // Puedes usar un switch o if-else para manejar diferentes acciones basadas en 'result'
                   },
-                  itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                  itemBuilder: (BuildContext context) =>
+                      <PopupMenuEntry<String>>[
                     const PopupMenuItem<String>(
                       value: 'opcion1',
                       child: Text('Pausar'),
@@ -50,18 +51,33 @@ class LockProfileCard extends ConsumerWidget {
                     ),
                   ],
                 ),
-        
               ]),
-        
+
               const SizedBox(height: 8),
-              Text(
-                profile.title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                children: [
+                  if (profile.stateProfile == StateLockProfile.paused) ...[
+                    const Icon(Icons.pause),
+                  ] else if (profile.stateProfile == StateLockProfile.active) ...[
+                    profile.isBlockNotifications
+                      ? const Icon(Icons.notifications_off_outlined)
+                      : const Icon(Icons.notifications_active_outlined),
+                  ] else ...[
+                    const Icon(Icons.block),
+                  ],
+                  
+                  const SizedBox(width: 8),                  
+
+                  Text(
+                    profile.title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
               ),
-        
+
               const SizedBox(height: 8),
               // Mostrar los tipos de bloqueo
               Column(
@@ -82,17 +98,22 @@ class LockProfileCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    profile.stateProfile == StateLockProfile.inactive ? 'Inactivo' : '',
+                    profile.stateProfile == StateLockProfile.inactive
+                        ? 'Inactivo'
+                        : '',
                     style: TextStyle(fontSize: 16, color: colors.primary),
                   ),
                   Switch(
-                    value: profile.stateProfile == StateLockProfile.active || profile.stateProfile == StateLockProfile.paused,
+                    value: profile.stateProfile == StateLockProfile.active ||
+                        profile.stateProfile == StateLockProfile.paused,
                     onChanged: (value) {
                       // Cambiar el estado del perfil
                       ref.read(lockProfilesProvider.notifier).chageState(
-                        value ? StateLockProfile.active : StateLockProfile.inactive,
-                        profile.id,
-                      );
+                            value
+                                ? StateLockProfile.active
+                                : StateLockProfile.inactive,
+                            profile.id,
+                          );
                     },
                   ),
                 ],

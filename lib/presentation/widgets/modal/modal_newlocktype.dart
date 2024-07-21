@@ -19,7 +19,7 @@ class NewLockTypeModal extends ConsumerWidget {
         Navigator.pop(context);
       },
       child: DraggableScrollableSheet(
-        initialChildSize: 0.5,
+        initialChildSize: 0.4,
         minChildSize: 0.3,
         maxChildSize: 0.8,
         builder: (context, scrollController) {
@@ -53,6 +53,7 @@ class NewLockTypeModal extends ConsumerWidget {
                           showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
                             builder: (context) => const UsageLimitModal(),
                           );
                         },
@@ -65,6 +66,7 @@ class NewLockTypeModal extends ConsumerWidget {
                           showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
                             builder: (context) => const ScheduleModal(),
                           );
                         },
@@ -77,6 +79,7 @@ class NewLockTypeModal extends ConsumerWidget {
                           showModalBottomSheet(
                             context: context,
                             isScrollControlled: true,
+                            backgroundColor: Colors.transparent,
                             builder: (context) => const LaunchesLimitModal(),
                           );
                         },
