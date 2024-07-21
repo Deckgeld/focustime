@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
 import 'package:focustime/presentation/providers/theme/theme_providers.dart';
+import 'package:focustime/presentation/widgets/modal/modal_launch_number.dart';
+import 'package:focustime/presentation/widgets/modal/modal_schedule.dart';
+import 'package:focustime/presentation/widgets/modal/modal_usage_limit.dart';
 
 class NewLockTypeModal extends ConsumerWidget {
   final Function(LockType) onLockTypeAdded;
@@ -49,18 +52,26 @@ class NewLockTypeModal extends ConsumerWidget {
                         subtitle: const Text('p.ej. 30 minutos por día'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {
-                          onLockTypeAdded(LockType(
-                            type: NameLockType.limitUsage,
-                            limit: 30,
-                            daysActive: [
-                              DayOfWeek.monday,
-                              DayOfWeek.tuesday,
-                              DayOfWeek.wednesday,
-                              DayOfWeek.thursday,
-                              DayOfWeek.friday,
-                            ],
-                          ));
-                          Navigator.pop(context);
+                          Navigator.pop(context); // Cierra el modal actual
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (context) => UsageLimitModal(
+                              onUsageLimitSet: (hours, minutes, selectedOptions) {
+                                onLockTypeAdded(LockType(
+                                  type: NameLockType.limitUsage,
+                                  limit: hours * 60 + minutes,
+                                  daysActive: [
+                                    DayOfWeek.monday,
+                                    DayOfWeek.tuesday,
+                                    DayOfWeek.wednesday,
+                                    DayOfWeek.thursday,
+                                    DayOfWeek.friday,
+                                  ],
+                                ));
+                              },
+                            ),
+                          );
                         },
                       ),
                       ListTile(
@@ -68,21 +79,26 @@ class NewLockTypeModal extends ConsumerWidget {
                         subtitle: const Text('p.ej. 10:00 am - 04:00 pm'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {
-                          onLockTypeAdded(LockType(
-                            type: NameLockType.schedule,
-                            daysActive: [
-                              DayOfWeek.monday,
-                              DayOfWeek.tuesday,
-                              DayOfWeek.wednesday,
-                              DayOfWeek.thursday,
-                              DayOfWeek.friday,
-                            ],
-                            hoursActive: [
-                              const TimeOfDay(hour: 10, minute: 0),
-                              const TimeOfDay(hour: 16, minute: 0),
-                            ],
-                          ));
-                          Navigator.pop(context);
+                          Navigator.pop(context); // Cierra el modal actual
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (context) => ScheduleModal(
+                              onScheduleSet: (startTime, endTime) {
+                                onLockTypeAdded(LockType(
+                                  type: NameLockType.schedule,
+                                  daysActive: [
+                                    DayOfWeek.monday,
+                                    DayOfWeek.tuesday,
+                                    DayOfWeek.wednesday,
+                                    DayOfWeek.thursday,
+                                    DayOfWeek.friday,
+                                  ],
+                                  hoursActive: [startTime, endTime],
+                                ));
+                              },
+                            ),
+                          );
                         },
                       ),
                       ListTile(
@@ -90,18 +106,26 @@ class NewLockTypeModal extends ConsumerWidget {
                         subtitle: const Text('p.ej. 300 lanzamientos por día'),
                         trailing: const Icon(Icons.chevron_right),
                         onTap: () {
-                          onLockTypeAdded(LockType(
-                            type: NameLockType.numberLaunch,
-                            limit: 300,
-                            daysActive: [
-                              DayOfWeek.monday,
-                              DayOfWeek.tuesday,
-                              DayOfWeek.wednesday,
-                              DayOfWeek.thursday,
-                              DayOfWeek.friday,
-                            ],
-                          ));
-                          Navigator.pop(context);
+                          Navigator.pop(context); // Cierra el modal actual
+                          showModalBottomSheet(
+                            context: context,
+                            isScrollControlled: true,
+                            builder: (context) => LaunchNumberModal(
+                              onLaunchNumberSet: (launches) {
+                                onLockTypeAdded(LockType(
+                                  type: NameLockType.numberLaunch,
+                                  limit: launches,
+                                  daysActive: [
+                                    DayOfWeek.monday,
+                                    DayOfWeek.tuesday,
+                                    DayOfWeek.wednesday,
+                                    DayOfWeek.thursday,
+                                    DayOfWeek.friday,
+                                  ],
+                                ));
+                              },
+                            ),
+                          );
                         },
                       ),
                     ],
