@@ -13,7 +13,6 @@ class LockProfileCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
-    final lockProfileProvider = ref.watch(lockProfilesProvider);
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),

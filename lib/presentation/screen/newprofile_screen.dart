@@ -1,32 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
 import 'package:focustime/presentation/widgets/cards/card_locktype.dart';
+import 'package:focustime/presentation/widgets/modal/modal_newlocktype.dart';
 
 class NewProfileScreen extends StatefulWidget {
+  const NewProfileScreen({super.key});
+
   @override
   _NewProfileScreenState createState() => _NewProfileScreenState();
 }
 
 class _NewProfileScreenState extends State<NewProfileScreen> {
   final TextEditingController _nombrePerfilController = TextEditingController();
-  List<LockType> _tiposBloqueo = [];
+  final List<LockType> _tiposBloqueo = [];
 
-  void _agregarTipoBloqueo(String tipo, String detalles) {
+  void _agregarTipoBloqueo(LockType tipoBloqueo) {
     setState(() {
-      _tiposBloqueo.add(LockType(
-        type: NameLockType.schedule,
-        daysActive: [
-          DayOfWeek.monday,
-          DayOfWeek.tuesday,
-          DayOfWeek.wednesday,
-          DayOfWeek.thursday,
-          DayOfWeek.friday,
-        ],
-        hoursActive: [
-          const TimeOfDay(hour: 22, minute: 50),
-          const TimeOfDay(hour: 1, minute: 35),
-        ],
-      ));
+      _tiposBloqueo.add(tipoBloqueo);
     });
   }
 
@@ -48,7 +38,6 @@ class _NewProfileScreenState extends State<NewProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               TextField(
                 controller: _nombrePerfilController,
                 decoration: const InputDecoration(
@@ -56,9 +45,7 @@ class _NewProfileScreenState extends State<NewProfileScreen> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 16),
-
               Row(
                 children: [
                   const Icon(Icons.lock),
@@ -67,25 +54,30 @@ class _NewProfileScreenState extends State<NewProfileScreen> {
                   const Spacer(),
                   ElevatedButton(
                     onPressed: () {
-                      // Aquí podrías abrir un diálogo para agregar un nuevo tipo de bloqueo
-                      _agregarTipoBloqueo('Horario', '10:50 PM - 01:35 AM');
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => NewLockTypeModal(
+                          onLockTypeAdded: _agregarTipoBloqueo,
+                        ),
+                      );
                     },
                     child: const Text('Añadir'),
                   ),
                 ],
               ),
-
               ListView.builder(
                 shrinkWrap: true,
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _tiposBloqueo.length,
                 itemBuilder: (context, index) {
-                  return LockTypeCard(lockType: _tiposBloqueo[index],);
+                  return LockTypeCard(
+                    lockType: _tiposBloqueo[index],
+                  );
                 },
               ),
-
               const SizedBox(height: 28),
-
               Row(
                 children: [
                   const Icon(Icons.apps),
@@ -100,46 +92,32 @@ class _NewProfileScreenState extends State<NewProfileScreen> {
                   ),
                 ],
               ),
-
-              const SizedBox(height: 8),      
-
+              const SizedBox(height: 8),
               const Card(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 50),
                   child: Center(child: Text('Seleccione las aplicaciones')),
                 ),
               ),
-
               const SizedBox(height: 16),
-
               Row(
                 children: [
                   const Icon(Icons.notifications_off),
                   const SizedBox(width: 8),
                   const Text('Bloquear notificaciones'),
                   const Spacer(),
-                  Checkbox(
-                    value: false, 
-                    onChanged: (value) {}
-                  )
+                  Checkbox(value: false, onChanged: (value) {}),
                 ],
               ),
-
               const SizedBox(height: 16),
-
               Center(
-                child: FilledButton(
-                style: ButtonStyle(
-                  minimumSize: WidgetStateProperty.all<Size>(
-                      const Size(50, 50)), // Tamaño mínimo del botón
+                child: ElevatedButton(
+                  onPressed: () {
+                    // Acción del botón
+                  },
+                  child: const Text('Guardar'),
                 ),
-                child: const Text('Guardar'),
-                onPressed: () {
-                  // Acción del botón
-                },
-                            ),
               ),
-
             ],
           ),
         ),
