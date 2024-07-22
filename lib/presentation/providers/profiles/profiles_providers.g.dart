@@ -6,7 +6,7 @@ part of 'profiles_providers.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$lockProfilesHash() => r'16c4fb683132cbe9ea22456ff804fca9184d4f99';
+String _$lockProfilesHash() => r'31f418ddc506a2cdcbeb968fc1366d2bfaf735f1';
 
 /// See also [LockProfiles].
 @ProviderFor(LockProfiles)
@@ -21,7 +21,7 @@ final lockProfilesProvider =
 );
 
 typedef _$LockProfiles = Notifier<List<LockProfile>>;
-String _$newLockProfileHash() => r'6fca831dc48b557f405af48fca73491446391eec';
+String _$newLockProfileHash() => r'6ba04af028507d64a8c3b0a83bb6c46c0c960022';
 
 /// See also [NewLockProfile].
 @ProviderFor(NewLockProfile)

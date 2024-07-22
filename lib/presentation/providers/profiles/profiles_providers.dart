@@ -146,11 +146,29 @@ class LockProfiles extends _$LockProfiles {
     ];
   }
 
-  void chageState( StateLockProfile newState, String id ) {
+  void changeState( StateLockProfile newState, String id ) {
     state = state.map((profile) {
       if (profile.id == id) {
         return profile.copyWith(
           stateProfile: newState
+        );
+      }
+      return profile;
+    }).toList();
+  }
+
+  void deleteProfile( String id ) {
+    state = state.where((profile) => profile.id != id).toList();
+  }
+
+  void updateProfile(LockProfile newProfile) {
+    state = state.map((profile) {
+      if (profile.id == newProfile.id) {
+        return profile.copyWith(
+          title: newProfile.title,
+          lockTypes: newProfile.lockTypes,
+          appImageUrls: newProfile.appImageUrls,
+          isBlockNotifications: newProfile.isBlockNotifications
         );
       }
       return profile;
@@ -214,6 +232,26 @@ class NewLockProfile extends _$NewLockProfile {
     );
   }
 
-  void updateLockType(LockType lockType) {}
+  void updateLockType(LockType lockType) {
+    state = state.copyWith(
+      lockTypes: state.lockTypes.map((lt) {
+        if (lt.id == lockType.id) {
+          return lockType;
+        }
+        return lt;
+      }).toList()
+    );
+  }
+
+  void createNewProfileWithExisting(LockProfile profile) {
+  state = state.copyWith(
+    id: profile.id,
+    title: profile.title,
+    lockTypes: profile.lockTypes,
+    isBlockNotifications: profile.isBlockNotifications,
+    appImageUrls: profile.appImageUrls,
+    stateProfile: profile.stateProfile
+  );
+}
 
 }

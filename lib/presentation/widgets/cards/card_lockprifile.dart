@@ -4,6 +4,7 @@ import 'package:focustime/domain/entitites/lockprofile.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
 import 'package:focustime/presentation/providers/profiles/profiles_providers.dart';
 import 'package:focustime/presentation/widgets/cards/blocked_apps_icon.dart';
+import 'package:go_router/go_router.dart';
 
 class LockProfileCard extends ConsumerWidget {
   final LockProfile profile;
@@ -37,17 +38,26 @@ class LockProfileCard extends ConsumerWidget {
                   },
                   itemBuilder: (BuildContext context) =>
                       <PopupMenuEntry<String>>[
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'opcion1',
-                      child: Text('Pausar'),
+                      child: const Text('Pausar'),
+                      onTap: () {
+                        
+                      },
                     ),
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'opcion2',
-                      child: Text('Editar'),
+                      child: const Text('Editar'),
+                      onTap: () {
+                        context.push('/newprofile/${profile.id}');
+                      },
                     ),
-                    const PopupMenuItem<String>(
+                    PopupMenuItem<String>(
                       value: 'opcion3',
-                      child: Text('Eliminar'),
+                      child: const Text('Eliminar'),
+                      onTap: () {
+                        ref.read(lockProfilesProvider.notifier).deleteProfile(profile.id);
+                      },
                     ),
                   ],
                 ),
@@ -108,7 +118,7 @@ class LockProfileCard extends ConsumerWidget {
                         profile.stateProfile == StateLockProfile.paused,
                     onChanged: (value) {
                       // Cambiar el estado del perfil
-                      ref.read(lockProfilesProvider.notifier).chageState(
+                      ref.read(lockProfilesProvider.notifier).changeState(
                             value
                                 ? StateLockProfile.active
                                 : StateLockProfile.inactive,
