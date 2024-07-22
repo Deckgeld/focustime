@@ -19,7 +19,7 @@ class LockProfileCard extends ConsumerWidget {
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: InkWell(
         onTap: () {
-          // Acción al presionar el card
+          context.push('/newprofile/${profile.id}');
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),

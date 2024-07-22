@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
+import 'package:focustime/presentation/providers/profiles/profiles_providers.dart';
+import 'package:focustime/presentation/widgets/modal/modal_launch_number.dart';
+import 'package:focustime/presentation/widgets/modal/modal_newlocktype.dart';
+import 'package:focustime/presentation/widgets/modal/modal_schedule.dart';
+import 'package:focustime/presentation/widgets/modal/modal_usage_limit.dart';
 
-class LockTypeCard extends StatelessWidget {
+class LockTypeCard extends ConsumerWidget {
   final LockType lockType;
 
   const LockTypeCard({super.key, required this.lockType});
@@ -41,13 +47,24 @@ class LockTypeCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       child: InkWell(
         onTap: () {
-          // Acción al presionar el card
+          showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              backgroundColor: Colors.transparent,
+              builder: (context) {
+                if (lockType.type == NameLockType.limitUsage) {
+                  return UsageLimitModal(lockType: lockType);
+                } else if (lockType.type == NameLockType.schedule) {
+                  return ScheduleModal(lockType: lockType);
+                } else {
+                  return LaunchesLimitModal(lockType: lockType);
+                }
+              });
         },
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -58,7 +75,9 @@ class LockTypeCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    lockType.daysActive.map((day) => getDayShortName(day)).join('  '),
+                    lockType.daysActive
+                        .map((day) => getDayShortName(day))
+                        .join('  '),
                     style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                   PopupMenuButton<String>(
@@ -67,20 +86,35 @@ class LockTypeCard extends StatelessWidget {
                       // Acción al seleccionar una opción
                       // Puedes usar un switch o if-else para manejar diferentes acciones basadas en 'result'
                     },
-                    itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                      const PopupMenuItem<String>(
+                    itemBuilder: (BuildContext context) =>
+                        <PopupMenuEntry<String>>[
+                      PopupMenuItem<String>(
                         value: 'edit',
-                        child: Text('Editar'),
+                        child: const Text('Editar'),
+                        onTap: () {
+                          showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              backgroundColor: Colors.transparent,
+                              builder: (context) {
+                                if (lockType.type == NameLockType.limitUsage) {
+                                  return UsageLimitModal(lockType: lockType);
+                                } else if (lockType.type ==
+                                    NameLockType.schedule) {
+                                  return ScheduleModal(lockType: lockType);
+                                } else {
+                                  return LaunchesLimitModal(lockType: lockType);
+                                }
+                              });
+                        },
                       ),
-                      const PopupMenuItem<String>(
+                      PopupMenuItem<String>(
                         value: 'delete',
-                        child: Text('Eliminar'),
+                        child: const Text('Eliminar'),
+                        onTap: () => ref
+                            .read(newLockProfileProvider.notifier)
+                            .removeLockType(lockType.id),
                       ),
-                      const PopupMenuItem<String>(
-                        value: 'delete',
-                        child: Text('Duplicar'),
-                      ),
-
                     ],
                   ),
                 ],
@@ -94,17 +128,20 @@ class LockTypeCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 8),
-              if (lockType.type == NameLockType.schedule && lockType.hoursActive != null)
+              if (lockType.type == NameLockType.schedule &&
+                  lockType.hoursActive != null)
                 Text(
                   '${lockType.hoursActive!.first.format(context)} - ${lockType.hoursActive!.last.format(context)}',
                   style: const TextStyle(fontSize: 14),
                 ),
-              if (lockType.type == NameLockType.limitUsage && lockType.limit != null)
+              if (lockType.type == NameLockType.limitUsage &&
+                  lockType.limit != null)
                 Text(
                   '${lockType.limit} minutos diarios  / ${lockType.isByBlock! ? 'bloque' : 'app'}',
                   style: const TextStyle(fontSize: 14),
                 ),
-              if (lockType.type == NameLockType.numberLaunch && lockType.limit != null)
+              if (lockType.type == NameLockType.numberLaunch &&
+                  lockType.limit != null)
                 Text(
                   '${lockType.limit} lanzamientos diarios',
                   style: const TextStyle(fontSize: 14),

@@ -8,7 +8,8 @@ import 'package:focustime/presentation/widgets/shared/day_select_button.dart';
 import 'package:uuid/uuid.dart';
 
 class LaunchesLimitModal extends ConsumerStatefulWidget {
-  const LaunchesLimitModal({super.key});
+  final LockType? lockType;
+  const LaunchesLimitModal({super.key, this.lockType});
 
   @override
   ConsumerState<LaunchesLimitModal> createState() => _LaunchesLimitModalState();
@@ -17,6 +18,22 @@ class LaunchesLimitModal extends ConsumerStatefulWidget {
 class _LaunchesLimitModalState extends ConsumerState<LaunchesLimitModal> {
   int launches = 0;
   Set<DayOfWeek> selectedDays = {};
+  
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+    if (widget.lockType != null) {
+      selectedDays = widget.lockType!.daysActive.toSet();
+    }
+  });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
 
  handleDaySelection(Set<DayOfWeek> selections) {
     setState(() {
@@ -30,7 +47,7 @@ class _LaunchesLimitModalState extends ConsumerState<LaunchesLimitModal> {
       behavior: HitTestBehavior.opaque,
       onTap: () {
         Navigator.pop(context);
-        Navigator.pop(context);
+        widget.lockType?? Navigator.pop(context);
       },
       child: DraggableScrollableSheet(
         initialChildSize: 0.5,
@@ -45,17 +62,22 @@ class _LaunchesLimitModalState extends ConsumerState<LaunchesLimitModal> {
                   icon: const Icon(Icons.check),
                   onPressed: () {
                     final newLockType = LockType(
-                      id: const Uuid().v4(),
+                      id: widget.lockType != null ? widget.lockType!.id : const Uuid().v4(),
                       type: NameLockType.numberLaunch,
                       daysActive: selectedDays.toList(),
                       limit: launches,
                     );
 
-                    ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
+                    if (widget.lockType != null) {
+                      ref.read(newLockProfileProvider.notifier).updateLockType(newLockType);
+                    } else{
+                      ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
+                    }
 
 
                     Navigator.pop(context);
-                    Navigator.pop(context);
+                    widget.lockType?? Navigator.pop(context);
+                    
                   },
                 ),
               ],

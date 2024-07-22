@@ -7,7 +7,9 @@ import 'package:focustime/presentation/widgets/shared/day_select_button.dart';
 import 'package:uuid/uuid.dart';
 
 class UsageLimitModal extends ConsumerStatefulWidget {
-  const UsageLimitModal({super.key});
+  final LockType? lockType; 
+  const UsageLimitModal({super.key, this.lockType});
+  
 
   @override
   ConsumerState<UsageLimitModal> createState() => _UsageLimitModalState();
@@ -30,7 +32,7 @@ class _UsageLimitModalState extends ConsumerState<UsageLimitModal> {
       behavior: HitTestBehavior.opaque,
       onTap: () {
         Navigator.pop(context);
-        Navigator.pop(context);
+        widget.lockType?? Navigator.pop(context);
       },
       child: DraggableScrollableSheet(
         initialChildSize: 0.8,
@@ -45,17 +47,21 @@ class _UsageLimitModalState extends ConsumerState<UsageLimitModal> {
                   icon: const Icon(Icons.check),
                   onPressed: () {
                     final newLockType = LockType(
-                      id: const Uuid().v4(),
+                      id: widget.lockType != null ? widget.lockType!.id : const Uuid().v4(),
                       type: NameLockType.limitUsage,
                       daysActive: selectedDays.toList(),
                       limit: selectedTime.inMinutes,
                       isByBlock: isBlockSelected,
                     );
 
-                    ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
+                    if (widget.lockType != null) {
+                      ref.read(newLockProfileProvider.notifier).updateLockType(newLockType);
+                    } else{
+                      ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
+                    }
 
                     Navigator.pop(context);
-                    Navigator.pop(context);
+                    widget.lockType?? Navigator.pop(context);
                   },
                 )
               ],

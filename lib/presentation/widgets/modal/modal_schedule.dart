@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
@@ -8,7 +7,8 @@ import 'package:uuid/uuid.dart';
 
 // convertimos el StatefulWidget en un ConsumerStatefulWidget
 class ScheduleModal extends ConsumerStatefulWidget {
-  const ScheduleModal({super.key});
+  final LockType? lockType;
+  const ScheduleModal({super.key, this.lockType});
 
   @override
   // Ahora sera un ConsumerState
@@ -33,7 +33,7 @@ class _ScheduleModalState extends ConsumerState<ScheduleModal> {
       behavior: HitTestBehavior.opaque,
       onTap: () {
         Navigator.pop(context);
-        Navigator.pop(context);
+        widget.lockType?? Navigator.pop(context);
       },
       child: DraggableScrollableSheet(
           initialChildSize: 0.6,
@@ -48,16 +48,20 @@ class _ScheduleModalState extends ConsumerState<ScheduleModal> {
                     icon: const Icon(Icons.check),
                     onPressed: () {
                       final newLockType = LockType(
-                      id: const Uuid().v4(),
+                      id: widget.lockType != null ? widget.lockType!.id : const Uuid().v4(),
                       type: NameLockType.schedule,
                       daysActive: selectedDays.toList(),
                       hoursActive: [startTime, endTime],
                     );
 
-                    ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
+                    if (widget.lockType != null) {
+                      ref.read(newLockProfileProvider.notifier).updateLockType(newLockType);
+                    } else{
+                      ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
+                    }
 
                       Navigator.pop(context);
-                      Navigator.pop(context);
+                      widget.lockType?? Navigator.pop(context);
                     },
                   ),
                 ],
