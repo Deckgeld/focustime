@@ -7,9 +7,8 @@ import 'package:focustime/presentation/widgets/shared/day_select_button.dart';
 import 'package:uuid/uuid.dart';
 
 class UsageLimitModal extends ConsumerStatefulWidget {
-  final LockType? lockType; 
+  final LockType? lockType;
   const UsageLimitModal({super.key, this.lockType});
-  
 
   @override
   ConsumerState<UsageLimitModal> createState() => _UsageLimitModalState();
@@ -20,6 +19,21 @@ class _UsageLimitModalState extends ConsumerState<UsageLimitModal> {
   bool isBlockSelected = true;
   Set<DayOfWeek> selectedDays = {};
 
+  @override
+  void initState() {
+    super.initState();
+
+    Future.microtask(() {
+      if (widget.lockType != null) {
+        setState(() {
+          selectedDays = widget.lockType!.daysActive.toSet();
+          selectedTime = Duration(minutes: widget.lockType!.limit ?? 0);
+          isBlockSelected = widget.lockType!.isByBlock ?? true;
+        });
+      }
+    });
+  }
+
   void handleDaySelection(Set<DayOfWeek> selections) {
     setState(() {
       selectedDays = selections;
@@ -29,99 +43,111 @@ class _UsageLimitModalState extends ConsumerState<UsageLimitModal> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
       onTap: () {
-        Navigator.pop(context);
-        widget.lockType?? Navigator.pop(context);
+        Navigator.of(context).pop();
       },
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.8,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (_, scrollController) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text("Limite de uso"),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.check),
-                  onPressed: () {
-                    final newLockType = LockType(
-                      id: widget.lockType != null ? widget.lockType!.id : const Uuid().v4(),
-                      type: NameLockType.limitUsage,
-                      daysActive: selectedDays.toList(),
-                      limit: selectedTime.inMinutes,
-                      isByBlock: isBlockSelected,
-                    );
-
-                    if (widget.lockType != null) {
-                      ref.read(newLockProfileProvider.notifier).updateLockType(newLockType);
-                    } else{
-                      ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
-                    }
-
-                    Navigator.pop(context);
-                    widget.lockType?? Navigator.pop(context);
-                  },
-                )
-              ],
-            ),
-            body: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ListView(
-                controller: scrollController,
-                children: [
-
-                  const Text('Días'),
-                  DaySelectButton(onSelectionChanged: handleDaySelection),
-
-                  const SizedBox(height: 16),
-
-
-                  const Text('Límite'),
-                  SizedBox(
-                    height: 200,
-                    child: CupertinoTimerPicker(
-                      mode: CupertinoTimerPickerMode.hm,
-                      onTimerDurationChanged: (Duration changedTimer) {
-                        setState(() {
-                          selectedTime = changedTimer;
-                        });
-                      },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: GestureDetector(
+            onTap: () {},
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.8,
+              minChildSize: 0.3,
+              maxChildSize: 0.8,
+              builder: (_, scrollController) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(20),
                     ),
                   ),
+                  child: Scaffold(
+                    appBar: AppBar(
+                      title: const Text("Límite de uso"),
+                      actions: [
+                        IconButton(
+                          icon: const Icon(Icons.check),
+                          onPressed: () {
+                            final newLockType = LockType(
+                              id: widget.lockType != null ? widget.lockType!.id : const Uuid().v4(),
+                              type: NameLockType.limitUsage,
+                              daysActive: selectedDays.toList(),
+                              limit: selectedTime.inMinutes,
+                              isByBlock: isBlockSelected,
+                            );
 
+                            if (widget.lockType != null) {
+                              ref.read(newLockProfileProvider.notifier).updateLockType(newLockType);
+                            } else {
+                              ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
+                            }
 
-                  Container(
-                    padding: const EdgeInsets.fromLTRB(16, 8, 0, 8),
-                    child: const Text('Bloquear Por:'),
-                  ),
-                  Center(
-                    child: ToggleButtons(
-                      borderRadius: BorderRadius.circular(8),
-                      isSelected: [isBlockSelected, !isBlockSelected],
-                      onPressed: (int index) {
-                        setState(() {
-                          isBlockSelected = (index == 0);
-                        });
-                      },
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text("Block"),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text("App"),
-                        ),
+                            Navigator.pop(context);
+                            widget.lockType ?? Navigator.pop(context);
+                          },
+                        )
                       ],
                     ),
+                    body: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: ListView(
+                        controller: scrollController,
+                        children: [
+                          const Text('Días'),
+                          DaySelectButton(onSelectionChanged: handleDaySelection),
+
+                          const SizedBox(height: 16),
+
+                          const Text('Límite'),
+                          SizedBox(
+                            height: 200,
+                            child: CupertinoTimerPicker(
+                              mode: CupertinoTimerPickerMode.hm,
+                              initialTimerDuration: selectedTime,
+                              onTimerDurationChanged: (Duration changedTimer) {
+                                setState(() {
+                                  selectedTime = changedTimer;
+                                });
+                              },
+                            ),
+                          ),
+
+                          Container(
+                            padding: const EdgeInsets.fromLTRB(16, 8, 0, 8),
+                            child: const Text('Bloquear Por:'),
+                          ),
+                          Center(
+                            child: ToggleButtons(
+                              borderRadius: BorderRadius.circular(8),
+                              isSelected: [isBlockSelected, !isBlockSelected],
+                              onPressed: (int index) {
+                                setState(() {
+                                  isBlockSelected = (index == 0);
+                                });
+                              },
+                              children: const [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text("Block"),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text("App"),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

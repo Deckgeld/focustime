@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/lockprofile.dart';
 import 'package:focustime/presentation/providers/profiles/profiles_providers.dart';
 import 'package:focustime/presentation/widgets/cards/card_locktype.dart';
+import 'package:focustime/presentation/widgets/modal/modal_list_apps.dart';
 import 'package:focustime/presentation/widgets/modal/modal_newlocktype.dart';
 
 class NewProfileScreen extends ConsumerStatefulWidget {
@@ -89,7 +90,11 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
                   );
                 },
               ),
+
+
               const SizedBox(height: 28),
+
+
               Row(
                 children: [
                   const Icon(Icons.apps),
@@ -97,10 +102,16 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
                   const Text('Aplicaciones bloqueadas'),
                   const Spacer(),
                   ElevatedButton(
-                    onPressed: () {
-                      // Aquí podrías abrir un selector de aplicaciones
-                    },
                     child: const Text('Seleccionar'),
+
+                    onPressed: () {
+                      showModalBottomSheet(
+                        context: context,
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (context) => const ListAppsModal(),
+                      );
+                    },
                   ),
                 ],
               ),
@@ -111,7 +122,11 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
                   child: Center(child: Text('Seleccione las aplicaciones')),
                 ),
               ),
+
+
               const SizedBox(height: 16),
+
+
               Row(
                 children: [
                   const Icon(Icons.notifications_off),

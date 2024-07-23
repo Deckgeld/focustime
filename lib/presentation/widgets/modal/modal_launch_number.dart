@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,16 +17,16 @@ class LaunchesLimitModal extends ConsumerStatefulWidget {
 class _LaunchesLimitModalState extends ConsumerState<LaunchesLimitModal> {
   int launches = 0;
   Set<DayOfWeek> selectedDays = {};
-  
+
   @override
   void initState() {
     super.initState();
 
     Future.microtask(() {
-    if (widget.lockType != null) {
-      selectedDays = widget.lockType!.daysActive.toSet();
-    }
-  });
+      if (widget.lockType != null) {
+        selectedDays = widget.lockType!.daysActive.toSet();
+      }
+    });
   }
 
   @override
@@ -35,7 +34,7 @@ class _LaunchesLimitModalState extends ConsumerState<LaunchesLimitModal> {
     super.dispose();
   }
 
- handleDaySelection(Set<DayOfWeek> selections) {
+  handleDaySelection(Set<DayOfWeek> selections) {
     setState(() {
       selectedDays = selections;
     });
@@ -44,69 +43,83 @@ class _LaunchesLimitModalState extends ConsumerState<LaunchesLimitModal> {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      behavior: HitTestBehavior.opaque,
       onTap: () {
-        Navigator.pop(context);
-        widget.lockType?? Navigator.pop(context);
+        Navigator.of(context).pop();
       },
-      child: DraggableScrollableSheet(
-        initialChildSize: 0.5,
-        minChildSize: 0.3,
-        maxChildSize: 0.8,
-        builder: (_, scrollController) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Número de lanzamientos'),
-              actions: [
-                IconButton(
-                  icon: const Icon(Icons.check),
-                  onPressed: () {
-                    final newLockType = LockType(
-                      id: widget.lockType != null ? widget.lockType!.id : const Uuid().v4(),
-                      type: NameLockType.numberLaunch,
-                      daysActive: selectedDays.toList(),
-                      limit: launches,
-                    );
-
-                    if (widget.lockType != null) {
-                      ref.read(newLockProfileProvider.notifier).updateLockType(newLockType);
-                    } else{
-                      ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
-                    }
-
-
-                    Navigator.pop(context);
-                    widget.lockType?? Navigator.pop(context);
-                    
-                  },
-                ),
-              ],
-            ),
-            body: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('Días'),
-                  DaySelectButton(onSelectionChanged: handleDaySelection),
-
-                  const SizedBox(height: 16),
-
-                  TextField(
-                    decoration: const InputDecoration(labelText: 'Lanzamientos'),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    onChanged: (value) {
-                      setState(() {
-                        launches = int.tryParse(value) ?? 0;
-                      });
-                    },
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        body: Center(
+          child: GestureDetector(
+            onTap: () {},
+            child: DraggableScrollableSheet(
+              initialChildSize: 0.5,
+              minChildSize: 0.3,
+              maxChildSize: 0.8,
+              builder: (_, scrollController) {
+                return Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).scaffoldBackgroundColor,
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(20),
+                    ),
                   ),
-                ],
-              ),
+                  child: Scaffold(
+                    appBar: AppBar(
+                      title: const Text('Número de lanzamientos'),
+                      actions: [
+                        IconButton(
+                          icon: const Icon(Icons.check),
+                          onPressed: () {
+                            final newLockType = LockType(
+                              id: widget.lockType != null
+                                  ? widget.lockType!.id
+                                  : const Uuid().v4(),
+                              type: NameLockType.numberLaunch,
+                              daysActive: selectedDays.toList(),
+                              limit: launches,
+                            );
+
+                            if (widget.lockType != null) {
+                              ref.read(newLockProfileProvider.notifier)
+                                  .updateLockType(newLockType);
+                            } else {
+                              ref.read(newLockProfileProvider.notifier)
+                                  .addLockType(newLockType);
+                            }
+
+                            Navigator.pop(context);
+                            widget.lockType ?? Navigator.pop(context);
+                          },
+                        ),
+                      ],
+                    ),
+                    body: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text('Días'),
+                          DaySelectButton(onSelectionChanged: handleDaySelection),
+                          const SizedBox(height: 16),
+                          TextField(
+                            decoration: const InputDecoration(labelText: 'Lanzamientos'),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                            onChanged: (value) {
+                              setState(() {
+                                launches = int.tryParse(value) ?? 0;
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }

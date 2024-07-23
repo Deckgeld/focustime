@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
 import 'package:focustime/presentation/providers/profiles/profiles_providers.dart';
 import 'package:focustime/presentation/widgets/modal/modal_launch_number.dart';
-import 'package:focustime/presentation/widgets/modal/modal_newlocktype.dart';
 import 'package:focustime/presentation/widgets/modal/modal_schedule.dart';
 import 'package:focustime/presentation/widgets/modal/modal_usage_limit.dart';
 

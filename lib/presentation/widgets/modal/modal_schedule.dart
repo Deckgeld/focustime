@@ -5,17 +5,14 @@ import 'package:focustime/presentation/providers/profiles/profiles_providers.dar
 import 'package:focustime/presentation/widgets/shared/day_select_button.dart';
 import 'package:uuid/uuid.dart';
 
-// convertimos el StatefulWidget en un ConsumerStatefulWidget
 class ScheduleModal extends ConsumerStatefulWidget {
   final LockType? lockType;
   const ScheduleModal({super.key, this.lockType});
 
   @override
-  // Ahora sera un ConsumerState
   ConsumerState<ScheduleModal> createState() => _ScheduleModalState();
 }
 
-// Ahora extiende de ConsumerState
 class _ScheduleModalState extends ConsumerState<ScheduleModal> {
   TimeOfDay startTime = const TimeOfDay(hour: 10, minute: 0);
   TimeOfDay endTime = const TimeOfDay(hour: 16, minute: 0);
@@ -33,9 +30,11 @@ class _ScheduleModalState extends ConsumerState<ScheduleModal> {
       behavior: HitTestBehavior.opaque,
       onTap: () {
         Navigator.pop(context);
-        widget.lockType?? Navigator.pop(context);
+        widget.lockType ?? Navigator.pop(context);
       },
-      child: DraggableScrollableSheet(
+      child: GestureDetector(
+        onTap: () {}, // Esto evita que los clics dentro del modal lo cierren
+        child: DraggableScrollableSheet(
           initialChildSize: 0.6,
           minChildSize: 0.3,
           maxChildSize: 0.8,
@@ -48,20 +47,20 @@ class _ScheduleModalState extends ConsumerState<ScheduleModal> {
                     icon: const Icon(Icons.check),
                     onPressed: () {
                       final newLockType = LockType(
-                      id: widget.lockType != null ? widget.lockType!.id : const Uuid().v4(),
-                      type: NameLockType.schedule,
-                      daysActive: selectedDays.toList(),
-                      hoursActive: [startTime, endTime],
-                    );
+                        id: widget.lockType != null ? widget.lockType!.id : const Uuid().v4(),
+                        type: NameLockType.schedule,
+                        daysActive: selectedDays.toList(),
+                        hoursActive: [startTime, endTime],
+                      );
 
-                    if (widget.lockType != null) {
-                      ref.read(newLockProfileProvider.notifier).updateLockType(newLockType);
-                    } else{
-                      ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
-                    }
+                      if (widget.lockType != null) {
+                        ref.read(newLockProfileProvider.notifier).updateLockType(newLockType);
+                      } else {
+                        ref.read(newLockProfileProvider.notifier).addLockType(newLockType);
+                      }
 
                       Navigator.pop(context);
-                      widget.lockType?? Navigator.pop(context);
+                      widget.lockType ?? Navigator.pop(context);
                     },
                   ),
                 ],
@@ -109,14 +108,13 @@ class _ScheduleModalState extends ConsumerState<ScheduleModal> {
                         }
                       },
                     ),
-                    
                   ],
                 ),
               ),
             );
-          }),
+          },
+        ),
+      ),
     );
   }
-
-  
 }
