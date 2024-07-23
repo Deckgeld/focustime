@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/presentation/providers/providers.dart';
+import 'package:focustime/presentation/widgets/shared/bustom_search_bar.dart';
+import 'package:installed_apps/app_info.dart';
+import 'package:installed_apps/installed_apps.dart';
 
 class ListAppsModal extends ConsumerStatefulWidget {
   const ListAppsModal({super.key});
@@ -10,32 +13,38 @@ class ListAppsModal extends ConsumerStatefulWidget {
 }
 
 class _ListAppsModalState extends ConsumerState<ListAppsModal> {
-  List<Map<String, dynamic>> apps = [
-    {'name': 'App 1', 'icon': Icons.apps, 'selected': false},
-    {'name': 'App 2', 'icon': Icons.apps, 'selected': false},
-    {'name': 'App 3', 'icon': Icons.apps, 'selected': false},
-    // Add more apps here
-  ];
-  List<Map<String, dynamic>> filteredApps = [];
+  List<AppInfo> apps = [];
+  List<AppInfo> filteredApps = [];
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    filteredApps = apps;
+    loadApps();
+  }
+
+  Future<void> loadApps() async {
+    final installedApps = await InstalledApps.getInstalledApps(true, true);
+    setState(() {
+      apps = installedApps;
+      filteredApps = installedApps;
+      isLoading = false;
+    });
   }
 
   void filterApps(String query) {
     setState(() {
       filteredApps = apps
-          .where(
-              (app) => app['name'].toLowerCase().contains(query.toLowerCase()))
+          .where((app) => app.name.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
 
   void toggleSelection(int index) {
     setState(() {
-      filteredApps[index]['selected'] = !filteredApps[index]['selected'];
+      filteredApps[index] = filteredApps[index].copyWith(
+        selected: !filteredApps[index].selected,
+      );
     });
   }
 
@@ -43,16 +52,13 @@ class _ListAppsModalState extends ConsumerState<ListAppsModal> {
   Widget build(BuildContext context) {
     final isDarkMode = ref.watch(themeProvider).isDarkMode;
 
-    //Este GestureDetector detecta los toques fuera del modal y cierra el modal con Navigator.of(context).pop().
     return GestureDetector(
       onTap: () {
         Navigator.of(context).pop();
       },
-      //Esto se hace para permitir que los toques pasen a través de él.
       child: Scaffold(
         backgroundColor: Colors.transparent,
         body: Center(
-          //Este GestureDetector captura los toques dentro del modal, evitando que el GestureDetector externo cierre el modal.
           child: GestureDetector(
             onTap: () {},
             child: DraggableScrollableSheet(
@@ -67,35 +73,48 @@ class _ListAppsModalState extends ConsumerState<ListAppsModal> {
                       top: Radius.circular(20),
                     ),
                   ),
-                  child: ListView(
-                    controller: scrollController,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                  child: isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : ListView(
+                          controller: scrollController,
                           children: [
-                            SearchBar(onChanged: filterApps),
-                            const SizedBox(height: 16.0),
-                            ...filteredApps.map((app) {
-                              int index = filteredApps.indexOf(app);
-                              return ListTile(
-                                leading: Icon(app['icon']),
-                                title: Text(app['name']),
-                                trailing: Checkbox(
-                                  value: app['selected'],
-                                  onChanged: (bool? value) {
-                                    toggleSelection(index);
-                                  },
-                                ),
-                                onTap: () => toggleSelection(index),
-                              );
-                            }),
+                            Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+
+
+                                  CustomSearchBar(onChanged: filterApps),
+
+
+                                  const SizedBox(height: 16.0),
+
+
+                                  ...filteredApps.map((app) {
+                                    int index = filteredApps.indexOf(app);
+                                    return ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundColor: Colors.transparent,
+                                        child: Image.memory(app.icon!),
+                                      ),
+                                      title: Text(app.name),
+                                      trailing: Checkbox(
+                                        value: app.selected,
+                                        onChanged: (bool? value) {
+                                          toggleSelection(index);
+                                        },
+                                      ),
+                                      onTap: () => toggleSelection(index),
+                                    );
+                                  }),
+
+                                  
+                                ],
+                              ),
+                            ),
                           ],
                         ),
-                      ),
-                    ],
-                  ),
                 );
               },
             ),
@@ -106,83 +125,26 @@ class _ListAppsModalState extends ConsumerState<ListAppsModal> {
   }
 }
 
-class SearchBar extends ConsumerStatefulWidget {
-  final Function(String) onChanged;
+// Extensión para añadir la propiedad 'selected' a AppInfo
+extension SelectableAppInfo on AppInfo {
+  static final Map<String, bool> _selectedMap = {};
 
-  const SearchBar({required this.onChanged, super.key});
+  bool get selected => _selectedMap[packageName] ?? false;
+  set selected(bool value) => _selectedMap[packageName] = value;
 
-  @override
-  ConsumerState<SearchBar> createState() => _SearchBarState();
-}
-
-class _SearchBarState extends ConsumerState<SearchBar>
-    with SingleTickerProviderStateMixin {
-  bool _isActive = false;
-  final TextEditingController _controller = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    final isDarkMode = ref.watch(themeProvider).isDarkMode;
-
-    return Row(
-      children: [
-        if (!_isActive)
-          const Text(
-            "Seleccione las aplicaciones a bloquear",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-
-        
-        Expanded(
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: AnimatedSize(
-              duration: const Duration(milliseconds: 250),
-              child: _isActive
-                  ? Container(
-                      width: double.infinity,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        color: isDarkMode ? Colors.grey[900] : Colors.white,
-                        borderRadius: BorderRadius.circular(4.0),
-                      ),
-                      child: TextField(
-                        controller: _controller,
-                        decoration: InputDecoration(
-                          hintText: 'Search for something',
-                          prefixIcon: const Icon(Icons.search),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _controller.clear();
-                                _isActive = false;
-                                widget.onChanged('');
-                              });
-                            },
-                            icon: const Icon(Icons.close),
-                          ),
-                        ),
-                        onChanged: widget.onChanged,
-                      ),
-                    )
-                  : IconButton(
-                      onPressed: () {
-                        setState(() {
-                          _isActive = true;
-                        });
-                      },
-                      icon: const Icon(Icons.search),
-                    ),
-            ),
-          ),
-        ),
-
-        IconButton(onPressed: () {Navigator.of(context).pop();}, icon: const Icon(Icons.check)),
-
-      ],
+  AppInfo copyWith({bool? selected}) {
+    final newApp = AppInfo(
+      name: name,
+      packageName: packageName,
+      versionName: versionName,
+      versionCode: versionCode,
+      icon: icon,
+      builtWith: builtWith,
+      installedTimestamp: installedTimestamp,
     );
+    if (selected != null) {
+      newApp.selected = selected;
+    }
+    return newApp;
   }
 }
