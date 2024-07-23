@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focustime/presentation/providers/theme/theme_providers.dart';
+import 'package:focustime/presentation/providers/providers.dart';
 
 class ListAppsModal extends ConsumerStatefulWidget {
   const ListAppsModal({super.key});

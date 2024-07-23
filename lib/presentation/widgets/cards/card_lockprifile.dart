@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/lockprofile.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
 import 'package:focustime/presentation/providers/profiles/profiles_providers.dart';
-import 'package:focustime/presentation/widgets/cards/blocked_apps_icon.dart';
+import 'package:focustime/presentation/widgets/cards/cards.dart';
 import 'package:go_router/go_router.dart';
 
 class LockProfileCard extends ConsumerWidget {

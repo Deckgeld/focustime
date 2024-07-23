@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:focustime/presentation/providers/theme/theme_providers.dart';
-import 'package:focustime/presentation/widgets/modal/modal_launch_number.dart';
-import 'package:focustime/presentation/widgets/modal/modal_schedule.dart';
-import 'package:focustime/presentation/widgets/modal/modal_usage_limit.dart';
+import 'package:focustime/presentation/providers/providers.dart';
+import 'package:focustime/presentation/widgets/modal/modals.dart';
 
 class NewLockTypeModal extends ConsumerWidget {
   const NewLockTypeModal({super.key});

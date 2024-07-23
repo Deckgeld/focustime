@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/lockprofile.dart';
 import 'package:focustime/presentation/providers/providers.dart';
-import 'package:focustime/presentation/widgets/cards/card_lockprifile.dart';
+import 'package:focustime/presentation/widgets/cards/cards.dart';
 import 'package:go_router/go_router.dart';
 
 class LockProfileView extends ConsumerWidget {

@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/lockprofile.dart';
 import 'package:focustime/presentation/providers/profiles/profiles_providers.dart';
-import 'package:focustime/presentation/widgets/cards/card_locktype.dart';
-import 'package:focustime/presentation/widgets/modal/modal_list_apps.dart';
-import 'package:focustime/presentation/widgets/modal/modal_newlocktype.dart';
+import 'package:focustime/presentation/widgets/cards/cards.dart';
+import 'package:focustime/presentation/widgets/modal/modals.dart';
 
 class NewProfileScreen extends ConsumerStatefulWidget {
   final LockProfile? profile;

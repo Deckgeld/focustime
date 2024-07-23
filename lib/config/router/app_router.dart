@@ -1,9 +1,4 @@
-import 'package:focustime/presentation/screen/newprofile_screen.dart';
-import 'package:focustime/presentation/screen/newprofile_screen_wrapper.dart';
-import 'package:focustime/presentation/screen/settings_screen.dart';
-import 'package:focustime/presentation/views/fastlock_view.dart';
-import 'package:focustime/presentation/screen/home_screen.dart';
-import 'package:focustime/presentation/views/lockprofile_view.dart';
+import 'package:focustime/presentation/screen/screens.dart';
 import 'package:go_router/go_router.dart';
 
 final appRouter = GoRouter(initialLocation: '/', routes: [
