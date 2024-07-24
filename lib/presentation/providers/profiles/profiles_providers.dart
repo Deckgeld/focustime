@@ -86,9 +86,7 @@ class NewLockProfile extends _$NewLockProfile {
   }
 
   void addApps(List<AppInfo> apps){
-    state = state.copyWith(
-      apps: apps
-    );
+    state = state.copyWith(apps: apps);
   }
 
   void toggleBlockNotifications() {
