@@ -8,7 +8,6 @@ import 'package:go_router/go_router.dart';
 class LockProfileView extends ConsumerWidget {
   const LockProfileView({super.key});
 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final lockProfiles = ref.watch(lockProfilesProvider);
@@ -25,19 +24,32 @@ class LockProfileView extends ConsumerWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.only(bottom: 80),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              _CardsCategory(title: 'Activas', type: StateLockProfile.active, profiles: lockProfiles),
-              _CardsCategory(title: 'Pausadas', type: StateLockProfile.paused, profiles: lockProfiles),
-              _CardsCategory(title: 'Inactivas', type: StateLockProfile.inactive, profiles: lockProfiles),
-            ],
-          ),
-        ),
-      ),
+      body: lockProfiles.isEmpty
+          ? const Center(
+              child: Text('Aun no hay ningun perfil de bloqueo :('),
+            )
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.only(bottom: 80),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    _CardsCategory(
+                        title: 'Activas',
+                        type: StateLockProfile.active,
+                        profiles: lockProfiles),
+                    _CardsCategory(
+                        title: 'Pausadas',
+                        type: StateLockProfile.paused,
+                        profiles: lockProfiles),
+                    _CardsCategory(
+                        title: 'Inactivas',
+                        type: StateLockProfile.inactive,
+                        profiles: lockProfiles),
+                  ],
+                ),
+              ),
+            ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           context.push('/newprofile');
@@ -53,11 +65,13 @@ class _CardsCategory extends StatelessWidget {
   final StateLockProfile type;
   final List<LockProfile> profiles;
 
-  const _CardsCategory({required this.title, required this.type, required this.profiles});
+  const _CardsCategory(
+      {required this.title, required this.type, required this.profiles});
 
   @override
   Widget build(BuildContext context) {
-    final filteredProfiles = profiles.where((profile) => profile.stateProfile == type).toList();
+    final filteredProfiles =
+        profiles.where((profile) => profile.stateProfile == type).toList();
 
     if (filteredProfiles.isEmpty) {
       return const SizedBox.shrink();

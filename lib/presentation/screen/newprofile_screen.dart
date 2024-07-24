@@ -148,7 +148,8 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
               ),
               const SizedBox(height: 16),
               Center(
-                child: ElevatedButton(
+                //filled button
+                child: FilledButton(
                   child: const Text('Guardar'),
                   onPressed: () {
                     if (widget.profile != null) {
