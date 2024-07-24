@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:focustime/domain/entitites/lockprofile.dart';
 import 'package:focustime/domain/entitites/locktype.dart';
+import 'package:installed_apps/app_info.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,133 +11,7 @@ const uuid = Uuid();
 @Riverpod(keepAlive: true)
 class LockProfiles extends _$LockProfiles {
   @override
-  List<LockProfile> build() => [
-    LockProfile(
-      id: uuid.v4(),
-      title: 'Bloqueo de redes sociales', 
-      stateProfile: StateLockProfile.active, 
-      isBlockNotifications: true,
-      lockTypes: [
-        LockType(
-          id: uuid.v4(),
-          type: NameLockType.limitUsage, 
-          limit: 30, 
-          daysActive: [
-            DayOfWeek.monday, 
-            DayOfWeek.tuesday, 
-            DayOfWeek.wednesday, 
-            DayOfWeek.thursday, 
-            DayOfWeek.friday
-          ],
-          isByBlock: true
-        ),
-        LockType(
-          id: uuid.v4(),
-          type: NameLockType.numberLaunch, 
-          limit: 300, 
-          daysActive: [
-            DayOfWeek.monday, 
-            DayOfWeek.tuesday, 
-            DayOfWeek.wednesday, 
-            DayOfWeek.thursday, 
-            DayOfWeek.friday
-          ]
-        ),
-      ],
-
-      appImageUrls: [
-        'https://www.freepnglogos.com/uploads/facebook-logo-10.png', 
-        'https://pngimg.com/uploads/instagram/instagram_PNG9.png',
-        'https://pngimg.com/uploads/instagram/instagram_PNG9.png',
-        'https://pngimg.com/uploads/instagram/instagram_PNG9.png',
-        'https://pngimg.com/uploads/instagram/instagram_PNG9.png',
-        'https://pngimg.com/uploads/instagram/instagram_PNG9.png',
-        ]
-    ),
-    LockProfile(
-      id: uuid.v4(),
-      title: 'Bloqueo de juegos', 
-      stateProfile: StateLockProfile.paused, 
-
-      lockTypes: [
-        LockType(
-          id: uuid.v4(),
-          type: NameLockType.numberLaunch, 
-          limit: 3000, 
-          daysActive: [
-            DayOfWeek.monday, 
-            DayOfWeek.tuesday, 
-            DayOfWeek.wednesday, 
-            DayOfWeek.thursday, 
-            DayOfWeek.friday
-          ]
-        ),
-        LockType(
-          id: uuid.v4(),
-          type: NameLockType.schedule, 
-          hoursActive: [
-            const TimeOfDay(hour: 8, minute: 00), 
-            const TimeOfDay(hour: 12, minute: 00)
-          ],
-          daysActive: [
-            DayOfWeek.monday, 
-            DayOfWeek.tuesday, 
-            DayOfWeek.wednesday, 
-            DayOfWeek.thursday, 
-            DayOfWeek.friday
-          ]
-        ),
-      ],
-
-      appImageUrls: [
-        'https://www.freepnglogos.com/uploads/facebook-logo-10.png', 
-        'https://pngimg.com/uploads/instagram/instagram_PNG9.png',
-        'https://pngimg.com/uploads/instagram/instagram_PNG9.png',
-        ]
-    ),
-    LockProfile(
-      id: uuid.v4(),
-      title: 'Bloqueo de juegos', 
-      stateProfile: StateLockProfile.inactive, 
-
-      lockTypes: [
-        LockType(
-          id: uuid.v4(),
-          type: NameLockType.numberLaunch, 
-          limit: 3000, 
-          daysActive: [
-            DayOfWeek.monday, 
-            DayOfWeek.tuesday, 
-            DayOfWeek.wednesday, 
-            DayOfWeek.thursday, 
-            DayOfWeek.friday
-          ]
-        ),
-        LockType(
-          id: uuid.v4(),
-          type: NameLockType.schedule, 
-          hoursActive: [
-            const TimeOfDay(hour: 8, minute: 00), 
-            const TimeOfDay(hour: 12, minute: 00)
-          ],
-          daysActive: [
-            DayOfWeek.monday, 
-            DayOfWeek.tuesday, 
-            DayOfWeek.wednesday, 
-            DayOfWeek.thursday, 
-            DayOfWeek.friday
-          ]
-        ),
-      ],
-
-      appImageUrls: [
-        'https://www.freepnglogos.com/uploads/facebook-logo-10.png', 
-        'https://pngimg.com/uploads/instagram/instagram_PNG9.png',
-        'https://pngimg.com/uploads/instagram/instagram_PNG9.png',
-        ]
-    ),
-  
-  ];
+  List<LockProfile> build() => [];
   
   void creadProfile( LockProfile newProfile ) {
     state = [
@@ -167,7 +41,7 @@ class LockProfiles extends _$LockProfiles {
         return profile.copyWith(
           title: newProfile.title,
           lockTypes: newProfile.lockTypes,
-          appImageUrls: newProfile.appImageUrls,
+          apps: newProfile.apps,
           isBlockNotifications: newProfile.isBlockNotifications
         );
       }
@@ -184,7 +58,7 @@ class NewLockProfile extends _$NewLockProfile {
       id: uuid.v4(),
       stateProfile: StateLockProfile.active,
       lockTypes: [],
-      appImageUrls: [],
+      apps: [],
       isBlockNotifications: true
     );
   }
@@ -211,18 +85,9 @@ class NewLockProfile extends _$NewLockProfile {
     );
   }
 
-  void addAppImageUrl( String newUrl ) {
+  void addApps(List<AppInfo> apps){
     state = state.copyWith(
-      appImageUrls: [
-        ...state.appImageUrls,
-        newUrl
-      ]
-    );
-  }
-
-  void removeAppImageUrl( String url ) {
-    state = state.copyWith(
-      appImageUrls: state.appImageUrls.where((appImageUrl) => appImageUrl != url).toList()
+      apps: apps
     );
   }
 
@@ -249,8 +114,8 @@ class NewLockProfile extends _$NewLockProfile {
     title: profile.title,
     lockTypes: profile.lockTypes,
     isBlockNotifications: profile.isBlockNotifications,
-    appImageUrls: profile.appImageUrls,
-    stateProfile: profile.stateProfile
+    stateProfile: profile.stateProfile,
+    apps: profile.apps
   );
 }
 

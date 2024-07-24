@@ -73,12 +73,6 @@ class _SearchBarState extends ConsumerState<CustomSearchBar>
             ),
           ),
         ),
-        IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(Icons.check),
-        ),
       ],
     );
   }

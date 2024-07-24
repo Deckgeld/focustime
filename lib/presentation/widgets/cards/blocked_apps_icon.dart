@@ -1,41 +1,48 @@
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 class BlockedAppsIcons extends StatelessWidget {
-  final List<String> appImageUrls;
+  final List<Uint8List?> appIcons;
+  final double width;
+  final double height;
+  final int limit;
 
-  const BlockedAppsIcons({super.key, required this.appImageUrls});
+  const BlockedAppsIcons({
+    super.key,
+    required this.appIcons,
+    this.width = 24,
+    this.height = 24,
+    this.limit = 5,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      runSpacing: 8.0, // Espacio vertical entre filas
       children: List.generate(
-        appImageUrls.length > 5 ? 5 : appImageUrls.length,
+        appIcons.length > limit + 1 ? limit + 1 : appIcons.length,
         (index) {
-          if (index == 4 && appImageUrls.length > 5) {
+          if (index == limit) {
             return Container(
-              width: 24,
-              height: 24,
+              width: width,
+              height: height,
               alignment: Alignment.center,
               child: Text(
-                '+${appImageUrls.length - 4}',
+                '+${appIcons.length - limit}',
                 style: const TextStyle(fontSize: 12),
               ),
             );
           } else {
-            return const Padding(
-                padding: EdgeInsets.only(right: 8.0),
-                child: Placeholder(
-                  fallbackHeight: 24,
-                  fallbackWidth: 24,
-                )
-                // Image.network(
-                //   appImageUrls[index],
-                //   width: 24,
-                //   height: 24,
-                //   errorBuilder: (context, error, stackTrace) {
-                //     return const Icon(Icons.error); // Muestra un ícono de error si la imagen no puede cargarse
-                //   })
-             );
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: appIcons[index] == null
+                  ? const Icon(Icons.question_mark_outlined)
+                  : Image.memory(
+                      appIcons[index]!,
+                      width: width,
+                      height: height,
+                    ),
+            );
           }
         },
       ),

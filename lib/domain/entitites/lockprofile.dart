@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:focustime/domain/entitites/locktype.dart';
+import 'package:installed_apps/app_info.dart';
 
 enum StateLockProfile { active, inactive, paused }
 
@@ -7,7 +10,7 @@ class LockProfile {
   final String title;
   final List<LockType> lockTypes;
   final StateLockProfile stateProfile;
-  final List<String> appImageUrls;
+  final List<AppInfo> apps;
   final bool isBlockNotifications;
 
 
@@ -16,7 +19,7 @@ class LockProfile {
     this.title = 'Sin nombre',
     required this.lockTypes,
     required this.stateProfile,
-    required this.appImageUrls,
+    required this.apps,
     this.isBlockNotifications = false,
   });
 
@@ -26,7 +29,7 @@ class LockProfile {
     String? title,
     List<LockType>? lockTypes,
     StateLockProfile? stateProfile,
-    List<String>? appImageUrls,
+    List<AppInfo>? apps,
     bool? isBlockNotifications,
   }) {
     return LockProfile(
@@ -34,8 +37,13 @@ class LockProfile {
       title: title ?? this.title,
       lockTypes: lockTypes ?? this.lockTypes,
       stateProfile: stateProfile ?? this.stateProfile,
-      appImageUrls: appImageUrls ?? this.appImageUrls,
-      isBlockNotifications: isBlockNotifications ?? this.isBlockNotifications,
+      isBlockNotifications: isBlockNotifications ?? this.isBlockNotifications, 
+      apps: apps ?? this.apps,
     );
+  }
+
+
+  List<Uint8List?> getAppIcons() {
+    return apps.map((app) => app.icon).toList();
   }
 }

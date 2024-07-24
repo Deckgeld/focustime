@@ -8,6 +8,7 @@ import 'package:focustime/presentation/widgets/modal/modals.dart';
 class NewProfileScreen extends ConsumerStatefulWidget {
   final LockProfile? profile;
   const NewProfileScreen({this.profile, super.key});
+
   @override
   ConsumerState<NewProfileScreen> createState() => _NewProfileScreenState();
 }
@@ -18,14 +19,16 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _nombrePerfilController = TextEditingController(text: widget.profile?.title ?? '');
-
+    _nombrePerfilController =
+        TextEditingController(text: widget.profile?.title ?? '');
     // Si el perfil ya existe, actualiza el estado del proveedor con los datos del perfil
     Future.microtask(() {
-    if (widget.profile != null) {
-      ref.read(newLockProfileProvider.notifier).createNewProfileWithExisting(widget.profile!);
-    }
-  });
+      if (widget.profile != null) {
+        ref
+            .read(newLockProfileProvider.notifier)
+            .createNewProfileWithExisting(widget.profile!);
+      }
+    });
   }
 
   @override
@@ -36,9 +39,8 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-  final newLockProfile = ref.watch(newLockProfileProvider);
-  
-
+    final newLockProfile = ref.watch(newLockProfileProvider);
+    final appIcons = newLockProfile.apps.map((app) => app.icon).toList();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.profile != null ? 'Editar perfil' : 'Nuevo perfil'),
@@ -49,16 +51,13 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               TextField(
                 controller: _nombrePerfilController,
                 decoration: const InputDecoration(
                   labelText: 'Nombre del perfil',
                   border: OutlineInputBorder(),
-                  
                 ),
               ),
-              
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -79,21 +78,24 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
                   ),
                 ],
               ),
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                itemCount: newLockProfile.lockTypes.length,
-                itemBuilder: (context, index) {
-                  return LockTypeCard(
-                    lockType: newLockProfile.lockTypes[index],
-                  );
-                },
-              ),
-
-
+              newLockProfile.lockTypes.isEmpty
+                  ? const Card(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 30),
+                        child: Center(child: Text('Todavia no hay ninguno')),
+                      ),
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: newLockProfile.lockTypes.length,
+                      itemBuilder: (context, index) {
+                        return LockTypeCard(
+                          lockType: newLockProfile.lockTypes[index],
+                        );
+                      },
+                    ),
               const SizedBox(height: 28),
-
-
               Row(
                 children: [
                   const Icon(Icons.apps),
@@ -102,7 +104,6 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
                   const Spacer(),
                   ElevatedButton(
                     child: const Text('Seleccionar'),
-
                     onPressed: () {
                       showModalBottomSheet(
                         context: context,
@@ -115,17 +116,23 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
                 ],
               ),
               const SizedBox(height: 8),
-              const Card(
+              Card(
                 child: Padding(
-                  padding: EdgeInsets.symmetric(vertical: 50),
-                  child: Center(child: Text('Seleccione las aplicaciones')),
+                  padding: EdgeInsets.symmetric(
+                      vertical: appIcons.isEmpty ? 50 : 20),
+                  child: Center(
+                    child: appIcons.isEmpty
+                        ? const Text('Seleccione las aplicaciones')
+                        : BlockedAppsIcons(
+                            appIcons: appIcons,
+                            height: 40,
+                            width: 40,
+                            limit: 11,
+                          ),
+                  ),
                 ),
               ),
-
-
               const SizedBox(height: 16),
-
-
               Row(
                 children: [
                   const Icon(Icons.notifications_off),
@@ -133,9 +140,10 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
                   const Text('Bloquear notificaciones'),
                   const Spacer(),
                   Checkbox(
-                    value: newLockProfile.isBlockNotifications, 
-                    onChanged: (value) => ref.read(newLockProfileProvider.notifier).toggleBlockNotifications()
-                  ),
+                      value: newLockProfile.isBlockNotifications,
+                      onChanged: (value) => ref
+                          .read(newLockProfileProvider.notifier)
+                          .toggleBlockNotifications()),
                 ],
               ),
               const SizedBox(height: 16),
@@ -143,13 +151,21 @@ class _NewProfileScreenState extends ConsumerState<NewProfileScreen> {
                 child: ElevatedButton(
                   child: const Text('Guardar'),
                   onPressed: () {
-                    if (widget.profile != null){
-                      ref.read(newLockProfileProvider.notifier).changeTitle(_nombrePerfilController.text);
-                      ref.read(lockProfilesProvider.notifier).updateProfile(ref.watch(newLockProfileProvider));
-                      Navigator.pop(context); 
-                    }else{
-                      ref.read(newLockProfileProvider.notifier).changeTitle(_nombrePerfilController.text);
-                      ref.read(lockProfilesProvider.notifier).creadProfile(ref.read(newLockProfileProvider));
+                    if (widget.profile != null) {
+                      ref
+                          .read(newLockProfileProvider.notifier)
+                          .changeTitle(_nombrePerfilController.text);
+                      ref
+                          .read(lockProfilesProvider.notifier)
+                          .updateProfile(ref.watch(newLockProfileProvider));
+                      Navigator.pop(context);
+                    } else {
+                      ref
+                          .read(newLockProfileProvider.notifier)
+                          .changeTitle(_nombrePerfilController.text);
+                      ref
+                          .read(lockProfilesProvider.notifier)
+                          .creadProfile(ref.read(newLockProfileProvider));
                       Navigator.pop(context);
                     }
                   },

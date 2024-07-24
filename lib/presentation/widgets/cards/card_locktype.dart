@@ -72,17 +72,14 @@ class LockTypeCard extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    lockType.daysActive
-                        .map((day) => getDayShortName(day))
-                        .join('  '),
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    lockType.daysActive.isEmpty
+                        ? 'NINGUNO'
+                        : lockType.daysActive
+                            .map((day) => getDayShortName(day))
+                            .join('  '),
                   ),
                   PopupMenuButton<String>(
                     icon: const Icon(Icons.menu), // Icono del botón
-                    onSelected: (String result) {
-                      // Acción al seleccionar una opción
-                      // Puedes usar un switch o if-else para manejar diferentes acciones basadas en 'result'
-                    },
                     itemBuilder: (BuildContext context) =>
                         <PopupMenuEntry<String>>[
                       PopupMenuItem<String>(
@@ -116,7 +113,6 @@ class LockTypeCard extends ConsumerWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
               Text(
                 getTypeName(lockType.type),
                 style: const TextStyle(

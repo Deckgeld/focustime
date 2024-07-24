@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:focustime/domain/entitites/lockprofile.dart';
@@ -9,11 +11,14 @@ import 'package:go_router/go_router.dart';
 class LockProfileCard extends ConsumerWidget {
   final LockProfile profile;
 
+
   const LockProfileCard({super.key, required this.profile});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colors = Theme.of(context).colorScheme;
+    List<Uint8List?> appIcons = profile.apps.map((app) => app.icon).toList();
+
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
@@ -27,8 +32,8 @@ class LockProfileCard extends ConsumerWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-                // Mostrar los iconos de las aplicaciones bloqueadas
-                BlockedAppsIcons(appImageUrls: profile.appImageUrls),
+
+                BlockedAppsIcons(appIcons: appIcons),
 
                 PopupMenuButton<String>(
                   icon: const Icon(Icons.menu), // Icono del botón

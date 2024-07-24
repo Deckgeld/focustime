@@ -15,6 +15,7 @@ class ListAppsModal extends ConsumerStatefulWidget {
 class _ListAppsModalState extends ConsumerState<ListAppsModal> {
   List<AppInfo> apps = [];
   List<AppInfo> filteredApps = [];
+  Map<String, bool> selectionState = {};
   bool isLoading = true;
 
   @override
@@ -28,6 +29,8 @@ class _ListAppsModalState extends ConsumerState<ListAppsModal> {
     setState(() {
       apps = installedApps;
       filteredApps = installedApps;
+      // Inicializar el estado de selección
+      selectionState = {for (var app in apps) app.packageName: false};
       isLoading = false;
     });
   }
@@ -40,11 +43,9 @@ class _ListAppsModalState extends ConsumerState<ListAppsModal> {
     });
   }
 
-  void toggleSelection(int index) {
+  void toggleSelection(String packageName) {
     setState(() {
-      filteredApps[index] = filteredApps[index].copyWith(
-        selected: !filteredApps[index].selected,
-      );
+      selectionState[packageName] = !(selectionState[packageName] ?? false);
     });
   }
 
@@ -62,8 +63,8 @@ class _ListAppsModalState extends ConsumerState<ListAppsModal> {
           child: GestureDetector(
             onTap: () {},
             child: DraggableScrollableSheet(
-              initialChildSize: 0.6,
-              minChildSize: 0.3,
+              initialChildSize: 0.8,
+              minChildSize: 0.5,
               maxChildSize: 0.8,
               builder: (context, scrollController) {
                 return Container(
@@ -83,16 +84,34 @@ class _ListAppsModalState extends ConsumerState<ListAppsModal> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: CustomSearchBar(
+                                            onChanged: filterApps),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.check),
+                                        onPressed: () {
+                                          final selectedApps = filteredApps
+                                              .where((app) =>
+                                                  selectionState[
+                                                      app.packageName] ??
+                                                  false)
+                                              .toList();
 
+                                          ref
+                                              .read(newLockProfileProvider
+                                                  .notifier)
+                                              .addApps(selectedApps);
 
-                                  CustomSearchBar(onChanged: filterApps),
-
-
+                                          Navigator.of(context).pop();
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                   const SizedBox(height: 16.0),
-
-
                                   ...filteredApps.map((app) {
-                                    int index = filteredApps.indexOf(app);
                                     return ListTile(
                                       leading: CircleAvatar(
                                         backgroundColor: Colors.transparent,
@@ -100,16 +119,17 @@ class _ListAppsModalState extends ConsumerState<ListAppsModal> {
                                       ),
                                       title: Text(app.name),
                                       trailing: Checkbox(
-                                        value: app.selected,
+                                        value:
+                                            selectionState[app.packageName] ??
+                                                false,
                                         onChanged: (bool? value) {
-                                          toggleSelection(index);
+                                          toggleSelection(app.packageName);
                                         },
                                       ),
-                                      onTap: () => toggleSelection(index),
+                                      onTap: () =>
+                                          toggleSelection(app.packageName),
                                     );
                                   }),
-
-                                  
                                 ],
                               ),
                             ),
@@ -122,29 +142,5 @@ class _ListAppsModalState extends ConsumerState<ListAppsModal> {
         ),
       ),
     );
-  }
-}
-
-// Extensión para añadir la propiedad 'selected' a AppInfo
-extension SelectableAppInfo on AppInfo {
-  static final Map<String, bool> _selectedMap = {};
-
-  bool get selected => _selectedMap[packageName] ?? false;
-  set selected(bool value) => _selectedMap[packageName] = value;
-
-  AppInfo copyWith({bool? selected}) {
-    final newApp = AppInfo(
-      name: name,
-      packageName: packageName,
-      versionName: versionName,
-      versionCode: versionCode,
-      icon: icon,
-      builtWith: builtWith,
-      installedTimestamp: installedTimestamp,
-    );
-    if (selected != null) {
-      newApp.selected = selected;
-    }
-    return newApp;
   }
 }
